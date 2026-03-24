@@ -1,0 +1,46 @@
+name: deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  tests:
+    uses: ./.github/workflows/tests.yml
+    secrets: inherit
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: tests
+    environment: Production
+
+    steps:
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+
+            cd ${{ secrets.DEPLOY_PATH }}
+
+            php artisan down --refresh=15
+
+            git pull origin master
+
+            composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+
+            npm ci
+            npm run build
+
+            php artisan migrate --force
+            php artisan optimize
+            php artisan view:cache
+            php artisan event:cache
+
+            php artisan up
