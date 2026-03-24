@@ -33,6 +33,8 @@ jobs:
 
             git pull origin master
 
+            chmod -R 775 storage bootstrap/cache
+
             composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
 
             npm ci
