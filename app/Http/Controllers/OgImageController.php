@@ -20,11 +20,11 @@ class OgImageController extends Controller
 
         $cacheKey = "og-image-{$article->id}-{$article->updated_at->timestamp}";
 
-        $encoded = Cache::remember($cacheKey, now()->addDays(7), function () use ($article) {
-            return base64_encode($this->generateImage($article));
+        $imageData = Cache::remember($cacheKey, now()->addDays(7), function () use ($article) {
+            return $this->generateImage($article);
         });
 
-        return response(base64_decode($encoded), 200, [
+        return response($imageData, 200, [
             'Content-Type' => 'image/png',
             'Cache-Control' => 'public, max-age=604800',
         ]);
