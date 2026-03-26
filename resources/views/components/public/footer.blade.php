@@ -3,7 +3,7 @@
         &copy; {{ date('Y') }} &lt;Code_Blog&gt; by Pierre Bultez.
     </div>
     <div class="flex items-center gap-8">
-        <a class="text-zinc-500 dark:text-zinc-500 hover:text-primary dark:hover:text-red-400 transition-colors opacity-80 hover:opacity-100" href="#">RSS</a>
-        <a class="text-zinc-500 dark:text-zinc-500 hover:text-primary dark:hover:text-red-400 transition-colors opacity-80 hover:opacity-100" href="#">Github</a>
+        <a class="text-zinc-500 dark:text-zinc-500 hover:text-primary dark:hover:text-red-400 transition-colors opacity-80 hover:opacity-100" href="{{ url('/feed') }}" title="Flux RSS">RSS</a>
+        <a class="text-zinc-500 dark:text-zinc-500 hover:text-primary dark:hover:text-red-400 transition-colors opacity-80 hover:opacity-100" href="https://github.com/PierreBultez" target="_blank" rel="noopener noreferrer" title="Profil GitHub de Pierre Bultez">Github</a>
     </div>
 </footer>

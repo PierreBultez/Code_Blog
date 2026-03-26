@@ -1,9 +1,34 @@
+@props([
+    'title' => null,
+    'navActive' => '',
+    'seoDescription' => null,
+    'seoCanonical' => null,
+    'seoOgType' => 'website',
+    'seoOgImage' => null,
+    'seoArticle' => null,
+    'seoBreadcrumbs' => [],
+])
+
+@php
+    $appName = config('app.name', '<Code_Blog>');
+    $pageTitle = $title ? $title . ' — ' . $appName : $appName . ' — Blog dev Laravel freelance';
+@endphp
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $title ?? '<Code_Blog>' }}</title>
+    <title>{{ $pageTitle }}</title>
+
+    @include('partials.seo', [
+        'title' => $pageTitle,
+        'description' => $seoDescription,
+        'canonical' => $seoCanonical,
+        'ogType' => $seoOgType,
+        'ogImage' => $seoOgImage,
+        'article' => $seoArticle,
+    ])
 
     {{-- Fonts --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,6 +44,11 @@
     </script>
 
     @vite(['resources/css/app.css', 'resources/js/public.js'])
+
+    @include('partials.structured-data', [
+        'article' => $seoArticle,
+        'breadcrumbs' => $seoBreadcrumbs,
+    ])
 </head>
 <body class="bg-background text-on-background font-sans selection:bg-primary-container selection:text-on-primary-container antialiased min-h-screen">
     <x-public.navbar :active="$navActive ?? ''" />

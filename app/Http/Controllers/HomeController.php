@@ -10,17 +10,20 @@ class HomeController extends Controller
 {
     public function index(): View
     {
-        $featured = Article::query()
+        $featuredArticles = Article::query()
             ->published()
             ->with('tags')
             ->latest('published_at')
-            ->first();
+            ->take(2)
+            ->get();
+
+        $featuredIds = $featuredArticles->pluck('id')->all();
 
         $recentArticles = Article::query()
             ->published()
             ->with('tags')
             ->latest('published_at')
-            ->when($featured, fn ($query) => $query->where('id', '!=', $featured->id))
+            ->whereNotIn('id', $featuredIds)
             ->take(3)
             ->get();
 
@@ -29,6 +32,6 @@ class HomeController extends Controller
             'tags' => Tag::query()->whereHas('articles', fn ($q) => $q->published())->count(),
         ];
 
-        return view('home', compact('featured', 'recentArticles', 'stats'));
+        return view('home', compact('featuredArticles', 'recentArticles', 'stats'));
     }
 }

@@ -1,4 +1,12 @@
-<x-layouts::public :navActive="'about'" :title="'À Propos <Code_Blog>'">
+<x-layouts::public
+    :navActive="'about'"
+    :title="'À Propos — Pierre Bultez, Développeur Laravel Freelance'"
+    :seoDescription="'Pierre Bultez, développeur web freelance spécialisé Laravel, basé dans le Vaucluse. Laravel, Livewire, Tailwind CSS, VueJS — disponible en remote.'"
+    :seoBreadcrumbs="[
+        ['name' => 'Accueil', 'url' => route('home')],
+        ['name' => 'À Propos', 'url' => route('about')],
+    ]"
+>
 
     <section class="pt-32 pb-20 px-6 max-w-5xl mx-auto">
         {{-- Hero --}}

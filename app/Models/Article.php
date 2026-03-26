@@ -19,6 +19,9 @@ class Article extends Model
         'title',
         'slug',
         'excerpt',
+        'meta_description',
+        'og_image',
+        'og_text',
         'content',
         'is_published',
         'published_at',
@@ -48,6 +51,28 @@ class Article extends Model
     public function scopePublished(Builder $query): Builder
     {
         return $query->where('is_published', true);
+    }
+
+    /**
+     * @return Attribute<string, never>
+     */
+    protected function seoDescription(): Attribute
+    {
+        return Attribute::get(fn (): string => $this->meta_description ?? Str::limit($this->excerpt ?? '', 160, ''));
+    }
+
+    /**
+     * @return Attribute<string, never>
+     */
+    protected function ogImageUrl(): Attribute
+    {
+        return Attribute::get(function (): string {
+            if ($this->og_image) {
+                return asset("storage/{$this->og_image}");
+            }
+
+            return route('articles.og-image', $this);
+        });
     }
 
     /**

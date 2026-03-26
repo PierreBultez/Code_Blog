@@ -4,7 +4,6 @@ namespace Database\Factories;
 
 use App\Models\Article;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 /**
  * @extends Factory<Article>
@@ -24,6 +23,7 @@ class ArticleFactory extends Factory
         return [
             'title' => $title,
             'excerpt' => fake()->paragraph(),
+            'meta_description' => fake()->optional(0.7)->text(160),
             'content' => fake()->paragraphs(5, true),
             'is_published' => $isPublished,
             'published_at' => $isPublished ? fake()->dateTimeBetween('-1 year', 'now') : null,

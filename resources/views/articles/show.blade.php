@@ -1,4 +1,16 @@
-<x-layouts::public :navActive="'articles'" :title="$article->title . ' <Code_Blog>'">
+<x-layouts::public
+    :navActive="'articles'"
+    :title="$article->title"
+    :seoDescription="$article->seo_description"
+    :seoOgType="'article'"
+    :seoOgImage="$article->og_image_url"
+    :seoArticle="$article"
+    :seoBreadcrumbs="[
+        ['name' => 'Accueil', 'url' => route('home')],
+        ['name' => 'Articles', 'url' => route('articles.index')],
+        ['name' => $article->title, 'url' => route('articles.show', $article)],
+    ]"
+>
 
     <article class="max-w-4xl mx-auto px-6 mt-20">
         {{-- Header --}}

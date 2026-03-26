@@ -1,4 +1,12 @@
-<x-layouts::public :navActive="'articles'" :title="'Manuscrits <Code_Blog>'">
+<x-layouts::public
+    :navActive="'articles'"
+    :title="'Articles & Tutoriels Laravel'"
+    :seoDescription="'Tous les articles du blog : tutoriels Laravel, Livewire, Tailwind CSS, déploiement, bonnes pratiques PHP et retours d\'expérience de développeur freelance.'"
+    :seoBreadcrumbs="[
+        ['name' => 'Accueil', 'url' => route('home')],
+        ['name' => 'Articles', 'url' => route('articles.index')],
+    ]"
+>
 
     <section class="max-w-4xl mx-auto px-6 pt-20 pb-12">
         {{-- Header --}}
@@ -28,7 +36,15 @@
             @forelse ($articles as $article)
                 <article class="group relative p-8 rounded-xl border border-outline-variant/30 bg-surface/40 hover:bg-surface/80 backdrop-blur-sm transition-all duration-300 hover:shadow-2xl hover:shadow-primary/5 active:scale-[0.99]">
                     <a href="{{ route('articles.show', $article) }}" class="absolute inset-0 z-10"></a>
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex flex-col md:flex-row md:items-start gap-6">
+                        <div class="md:w-48 lg:w-56 shrink-0">
+                            <img
+                                src="{{ $article->og_image_url }}"
+                                alt="{{ $article->title }}"
+                                class="w-full aspect-[1.91/1] object-cover rounded-lg"
+                                loading="lazy"
+                            >
+                        </div>
                         <div class="flex-1">
                             @if ($article->tags->isNotEmpty())
                                 <div class="flex flex-wrap gap-2 mb-3">
