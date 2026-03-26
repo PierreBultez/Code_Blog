@@ -12,7 +12,7 @@ class OgImageController extends Controller
 
     private const HEIGHT = 630;
 
-    private const FONT_BOLD_PATH = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf';
+    private const FONT_BOLD_PATH = __DIR__.'/../../../storage/fonts/DejaVuSans-Bold.ttf';
 
     public function __invoke(Article $article): Response
     {
