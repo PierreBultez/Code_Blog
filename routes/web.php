@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\OgImageController;
 use App\Http\Controllers\PageController;
 use App\Livewire\Dashboard\ArticleForm;
 use App\Livewire\Dashboard\ArticleList;
@@ -13,7 +12,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
 Route::get('/articles/{article:slug}', [ArticleController::class, 'show'])->name('articles.show');
-Route::get('/articles/{article:slug}/og-image.png', OgImageController::class)->name('articles.og-image');
 Route::get('/about', [PageController::class, 'about'])->name('about');
 
 Route::redirect('/register', '/login');
