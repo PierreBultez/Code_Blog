@@ -110,37 +110,7 @@
                 </div>
             </div>
 
-            {{-- Contact form (visual only) --}}
-            <div class="bg-surface-container border border-outline-variant p-8 md:p-10 rounded-xl shadow-xl">
-                <form class="space-y-6" onsubmit="return false;">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="space-y-2">
-                            <label class="text-sm font-bold text-on-surface-variant ml-1">Nom Complet</label>
-                            <input class="w-full bg-background border border-outline-variant rounded-lg p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-on-surface" placeholder="Jean Dupont" type="text" />
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-bold text-on-surface-variant ml-1">Sujet</label>
-                            <select class="w-full bg-background border border-outline-variant rounded-lg p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-on-surface">
-                                <option>Développement</option>
-                                <option>Infrastructure / SysAdmin</option>
-                                <option>Autre</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-bold text-on-surface-variant ml-1">Email</label>
-                        <input class="w-full bg-background border border-outline-variant rounded-lg p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-on-surface" placeholder="jean@example.com" type="email" />
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-bold text-on-surface-variant ml-1">Message</label>
-                        <textarea class="w-full bg-background border border-outline-variant rounded-lg p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none text-on-surface" placeholder="Votre message ici..." rows="4"></textarea>
-                    </div>
-                    <button class="w-full bg-primary text-on-primary py-4 rounded-lg font-bold text-lg hover:bg-primary-container transition-all flex items-center justify-center gap-2 group" type="button">
-                        Envoyer le message
-                        <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">send</span>
-                    </button>
-                </form>
-            </div>
+            <livewire:contact-form />
         </section>
     </section>
 
