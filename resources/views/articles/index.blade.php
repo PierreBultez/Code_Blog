@@ -41,6 +41,8 @@
                             <img
                                 src="{{ $article->og_image_url }}"
                                 alt="{{ $article->title }}"
+                                width="1200"
+                                height="630"
                                 class="w-full aspect-[1.91/1] object-cover rounded-lg"
                                 loading="lazy"
                             >

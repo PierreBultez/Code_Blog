@@ -20,7 +20,7 @@
             @foreach ($featuredArticles as $featured)
                 <article class="group relative overflow-hidden bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-100 dark:border-zinc-800 transition-all hover:shadow-2xl hover:shadow-primary/5 active:scale-[0.99] duration-300 flex flex-col">
                     <a href="{{ route('articles.show', $featured) }}" class="absolute inset-0 z-10"></a>
-                    <img src="{{ $featured->og_image_url }}" alt="{{ $featured->title }}" class="w-full aspect-[1.91/1] object-cover" loading="eager">
+                    <img src="{{ $featured->og_image_url }}" alt="{{ $featured->title }}" width="1200" height="630" class="w-full aspect-[1.91/1] object-cover" loading="eager">
                     <div class="flex flex-col flex-1 p-6">
                         <div class="flex items-center gap-3 mb-3">
                             @foreach ($featured->tags as $tag)
@@ -75,7 +75,7 @@
                     <article class="group relative">
                         <a href="{{ route('articles.show', $article) }}" class="absolute inset-0 z-10"></a>
                         <div class="flex flex-col md:flex-row md:items-center gap-6 p-6 rounded-2xl hover:bg-white dark:hover:bg-zinc-900 transition-all border border-transparent hover:border-zinc-100 dark:hover:border-zinc-800">
-                            <img src="{{ $article->og_image_url }}" alt="{{ $article->title }}" class="w-full md:w-40 lg:w-48 shrink-0 aspect-[1.91/1] object-cover rounded-lg" loading="lazy">
+                            <img src="{{ $article->og_image_url }}" alt="{{ $article->title }}" width="1200" height="630" class="w-full md:w-40 lg:w-48 shrink-0 aspect-[1.91/1] object-cover rounded-lg" loading="lazy">
                             <div class="flex-1">
                                 <div class="flex items-center gap-3 mb-1">
                                     @foreach ($article->tags as $tag)
