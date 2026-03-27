@@ -18,6 +18,12 @@
                     <flux:sidebar.item icon="document-text" :href="route('dashboard.articles.index')" :current="request()->routeIs('dashboard.articles.*')" wire:navigate>
                         {{ __('Articles') }}
                     </flux:sidebar.item>
+                    <flux:sidebar.item icon="chat-bubble-left-right" :href="route('dashboard.comments.index')" :current="request()->routeIs('dashboard.comments.*')" wire:navigate>
+                        {{ __('Commentaires') }}
+                        @if (($unreadComments = \App\Models\Comment::where('is_read', false)->count()) > 0)
+                            <flux:badge color="red" size="sm" class="ml-auto">{{ $unreadComments }}</flux:badge>
+                        @endif
+                    </flux:sidebar.item>
                     <flux:sidebar.item icon="tag" :href="route('dashboard.tags.index')" :current="request()->routeIs('dashboard.tags.*')" wire:navigate>
                         {{ __('Tags') }}
                     </flux:sidebar.item>

@@ -6,6 +6,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\TinyMceUploadController;
 use App\Livewire\Dashboard\ArticleForm;
 use App\Livewire\Dashboard\ArticleList;
+use App\Livewire\Dashboard\CommentList;
 use App\Livewire\Dashboard\TagForm;
 use App\Livewire\Dashboard\TagList;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/articles', ArticleList::class)->name('articles.index');
         Route::get('/articles/create', ArticleForm::class)->name('articles.create');
         Route::get('/articles/{article}/edit', ArticleForm::class)->name('articles.edit');
+
+        Route::get('/comments', CommentList::class)->name('comments.index');
 
         Route::get('/tags', TagList::class)->name('tags.index');
         Route::get('/tags/create', TagForm::class)->name('tags.create');

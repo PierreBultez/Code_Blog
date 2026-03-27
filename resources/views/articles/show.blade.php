@@ -44,14 +44,8 @@
             {!! $article->content !!}
         </section>
 
-        {{-- Discussion placeholder --}}
-        <section class="mt-20 border-t border-outline-variant pt-16 pb-12">
-            <h3 class="text-2xl font-bold font-headline mb-8 flex items-center gap-3 text-on-surface">
-                <span class="material-symbols-outlined text-primary">chat_bubble</span>
-                Discussion
-            </h3>
-            <p class="text-on-surface-variant">Les commentaires seront bientôt disponibles.</p>
-        </section>
+        {{-- Discussion --}}
+        <livewire:article-comments :article="$article" />
     </article>
 
 </x-layouts::public>
