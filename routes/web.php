@@ -3,6 +3,7 @@
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\TinyMceUploadController;
 use App\Livewire\Dashboard\ArticleForm;
 use App\Livewire\Dashboard\ArticleList;
 use App\Livewire\Dashboard\TagForm;
@@ -18,6 +19,8 @@ Route::redirect('/register', '/login');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('dashboard', 'dashboard')->name('dashboard');
+
+    Route::post('/tinymce/upload', TinyMceUploadController::class)->name('tinymce.upload');
 
     Route::prefix('dashboard')->name('dashboard.')->group(function () {
         Route::get('/articles', ArticleList::class)->name('articles.index');

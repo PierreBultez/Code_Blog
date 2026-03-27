@@ -16,8 +16,28 @@
                 target: $refs.tinymce,
                 license_key: 'gpl',
                 promotion: false,
-                plugins: 'codesample link lists autolink',
-                toolbar: 'undo redo | blocks | fontfamily fontsize | bold italic blockquote | alignleft aligncenter alignright alignjustify | bullist numlist | link codesample | backcolor',
+                plugins: 'codesample link lists autolink emoticons fullscreen image',
+                toolbar: 'undo redo | blocks | emoticons image | bold italic blockquote | alignleft aligncenter alignright alignjustify | bullist numlist | link codesample | backcolor | fullscreen',
+                images_upload_handler: (blobInfo) => new Promise((resolve, reject) => {
+                    const formData = new FormData();
+                    formData.append('file', blobInfo.blob(), blobInfo.filename());
+
+                    fetch('{{ route('tinymce.upload') }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]')?.content,
+                        },
+                        body: formData,
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => { throw new Error(err.message || 'Upload failed') });
+                        }
+                        return response.json();
+                    })
+                    .then(data => resolve(data.location))
+                    .catch(err => reject(err.message));
+                }),
                 setup: function (editor) {
                     editor.on('blur', function (e) {
                         value = editor.getContent()
