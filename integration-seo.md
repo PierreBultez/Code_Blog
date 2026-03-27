@@ -285,10 +285,11 @@ Stocke le chemin relatif de l'image uploadée manuellement (ex: `og-images/mon-a
 **Fichier créé :** `app/Http/Controllers/OgImageController.php`
 
 Route : `GET /articles/{article:slug}/og-image.png` (nommée `articles.og-image`)
+Enregistrée dans `bootstrap/app.php` avec middleware minimal (voir section 11).
 
 Génère une image PNG 1200x630px avec le titre (ou `og_text`) centré, rendu en dégradé de couleur via une technique de masquage pixel par pixel. Le design visuel a été simplifié (voir section 10a pour les détails).
 
-L'image est mise en cache 7 jours via `Cache::remember()` avec une clé basée sur `article.id` + `article.updated_at`. Le header HTTP `Cache-Control: max-age=604800` est aussi envoyé.
+L'image est mise en cache 7 jours via `Cache::remember()` (driver Redis, voir section 12) avec une clé basée sur `article.id` + `article.updated_at`. Le header HTTP `Cache-Control: max-age=604800` est aussi envoyé.
 
 Retourne une 404 si l'article n'est pas publié.
 
@@ -355,7 +356,7 @@ L'image est affichée à gauche sur desktop (largeur fixe 224px) et pleine large
 
 - Extension PHP GD (vérifiée disponible)
 - Symlink `storage:link` (créé lors de l'implémentation)
-- Police DejaVu Sans Bold dans `/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf`
+- Police DejaVu Sans Bold embarquée dans `storage/fonts/DejaVuSans-Bold.ttf` (voir section 13)
 
 ### Tests
 
@@ -505,7 +506,153 @@ Les articles récents excluent les IDs des featured via `whereNotIn` pour évite
 
 ---
 
-## Récapitulatif des fichiers
+## 11. Route OG image — Optimisation middleware
+
+**Problème :** La route `articles.og-image` était enregistrée dans `routes/web.php`, ce qui lui appliquait les 15+ middlewares du groupe `web` (sessions, CSRF, cookies, etc.) — totalement inutiles pour servir une image binaire.
+
+**Fichier modifié :** `bootstrap/app.php`
+
+La route a été déplacée dans le callback `then:` de `withRouting()`, avec uniquement le middleware `SubstituteBindings` (nécessaire pour le route model binding `{article:slug}`) :
+
+```php
+->withRouting(
+    web: __DIR__.'/../routes/web.php',
+    commands: __DIR__.'/../routes/console.php',
+    health: '/up',
+    then: function () {
+        Route::middleware(SubstituteBindings::class)
+            ->get('/articles/{article:slug}/og-image.png', OgImageController::class)
+            ->name('articles.og-image');
+    },
+)
+```
+
+**Fichier modifié :** `routes/web.php`
+
+- Suppression de la route `articles.og-image` et de l'import `OgImageController`
+
+**Impact :** Chaque requête d'image OG passe par 1 middleware au lieu de ~15, réduisant le temps de traitement côté serveur.
+
+> **Note :** Le middleware `SubstituteBindings` est indispensable ici. Sans lui, `{article:slug}` ne résout pas l'instance Eloquent et la route retourne 404.
+
+---
+
+## 12. Migration vers Redis (cache et sessions)
+
+**Problème :** Le cache et les sessions utilisaient le driver `database`. Cela posait deux problèmes :
+1. **Performance** — chaque lecture/écriture de cache = requête SQL
+2. **Bug binaire** — `Cache::remember()` dans `OgImageController` tentait de stocker du PNG binaire (~50 Ko) dans une table `cache` en charset `utf8mb4`, causant des erreurs 500 en production (solution temporaire : encodage base64, supprimé depuis)
+
+**Fichier modifié :** `.env` (en production uniquement)
+
+```diff
+- CACHE_STORE=database
+- SESSION_DRIVER=database
++ CACHE_STORE=redis
++ SESSION_DRIVER=redis
+```
+
+**Impact :** Le cache Redis stocke nativement les données binaires et offre des temps d'accès sub-milliseconde. Le workaround base64 a été supprimé du code.
+
+---
+
+## 13. Portabilité de la police OG
+
+**Problème :** `OgImageController` référençait la police système `/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf`, qui n'existait pas sur le VPS de production (erreur 500).
+
+**Fichier modifié :** `app/Http/Controllers/OgImageController.php`
+
+```diff
+- private const FONT_BOLD_PATH = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf';
++ private const FONT_BOLD_PATH = __DIR__.'/../../../storage/fonts/DejaVuSans-Bold.ttf';
+```
+
+**Fichier ajouté :** `storage/fonts/DejaVuSans-Bold.ttf`
+
+La police est embarquée dans le projet. Le chemin relatif via `__DIR__` fonctionne quel que soit l'emplacement d'installation.
+
+---
+
+## 14. Optimisation Lighthouse — Performance (score 83 → 95+)
+
+**Problème :** Le score Lighthouse Performance est tombé à 83. L'analyse du rapport JSON a identifié 4 causes, **sans rapport avec Redis** :
+
+### 14a. Google Fonts non-bloquantes (économie estimée : ~1 060 ms sur FCP)
+
+**Fichier modifié :** `resources/views/layouts/public.blade.php`
+
+Les 2 `<link rel="stylesheet">` pour Google Fonts bloquaient le rendu : le navigateur suspendait l'affichage tant que le CSS des fonts n'était pas téléchargé et parsé.
+
+#### Avant
+
+```html
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+```
+
+#### Après
+
+```html
+{{-- Preload pour démarrer le téléchargement en priorité haute --}}
+<link rel="preload" as="style" href="...Manrope+JetBrains...&display=swap">
+<link rel="preload" as="style" href="...Material+Symbols...&display=swap">
+
+{{-- Chargement non-bloquant via media="print" + onload --}}
+<link href="...Manrope+JetBrains...&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<link href="...Material+Symbols...&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+{{-- Fallback sans JavaScript --}}
+<noscript>
+    <link href="...Manrope+JetBrains...&display=swap" rel="stylesheet">
+    <link href="...Material+Symbols...&display=swap" rel="stylesheet">
+</noscript>
+```
+
+**Technique :** `media="print"` dit au navigateur que le CSS ne concerne que l'impression → il ne bloque pas le rendu. `onload="this.media='all'"` bascule sur `media="all"` une fois chargé → les styles s'appliquent. Le `rel="preload"` en parallèle déclenche le téléchargement en priorité haute malgré le `media="print"`. Le `display=swap` dans l'URL Google assure que le texte est visible immédiatement avec une police système de fallback.
+
+### 14b. Material Symbols allégé (~1.1 MB → taille réduite)
+
+**Fichier modifié :** `resources/views/layouts/public.blade.php`
+
+L'URL Google Fonts demandait la police variable complète avec tous les axes de variation :
+
+```diff
+- Material+Symbols+Outlined:wght,FILL@100..700,0..1
++ Material+Symbols+Outlined:opsz,wght,FILL@24,400,0
+```
+
+L'ancienne URL chargeait **tous les poids** (100 à 700) et **toutes les variantes de fill** (0 à 1), soit la police variable multi-axes complète (~1.1 MB en woff2). La nouvelle URL fixe une seule combinaison (`opsz=24, wght=400, FILL=0`), correspondant à l'utilisation réelle dans le projet (le CSS définit `font-variation-settings: 'FILL' 0, 'wght' 400`). Google Fonts sert alors un fichier statique beaucoup plus léger.
+
+### 14c. CLS réduit — Dimensions explicites sur les images OG
+
+**Fichiers modifiés :**
+- `resources/views/home.blade.php` — images featured + articles récents
+- `resources/views/articles/index.blade.php` — vignettes de la liste
+
+```diff
+- <img src="{{ $article->og_image_url }}" alt="..." class="w-full aspect-[1.91/1] object-cover" loading="lazy">
++ <img src="{{ $article->og_image_url }}" alt="..." width="1200" height="630" class="w-full aspect-[1.91/1] object-cover" loading="lazy">
+```
+
+Les attributs HTML `width` et `height` permettent au navigateur de calculer le ratio et réserver l'espace avant le chargement de l'image, éliminant le layout shift (CLS). Les images générées font 1200x630px.
+
+### 14d. Cache navigateur pour les assets Vite (à configurer en production)
+
+**À ajouter dans la config Nginx du VPS :**
+
+```nginx
+location /build/assets/ {
+    expires 1y;
+    add_header Cache-Control "public, immutable";
+    access_log off;
+}
+```
+
+Les fichiers Vite utilisent des noms hashés (ex: `app-Bx7K3qF2.css`). Un cache d'1 an avec `immutable` est sûr car le hash change automatiquement à chaque build. Actuellement, le TTL cache est à 0 dans Lighthouse.
+
+---
+
+## Récapitulatif des fichiers (mis à jour)
 
 ### Fichiers créés
 
@@ -518,22 +665,26 @@ Les articles récents excluent les IDs des featured via `whereNotIn` pour évite
 | `resources/views/partials/structured-data.blade.php` | JSON-LD (WebSite, Article, Breadcrumb) |
 | `app/Http/Controllers/OgImageController.php` | Génération d'images OG avec GD (dégradés + masquage) |
 | `tests/Feature/OgImageTest.php` | 4 tests pour le système OG |
+| `storage/fonts/DejaVuSans-Bold.ttf` | Police embarquée pour la génération OG |
 
 ### Fichiers modifiés
 
 | Fichier | Modification |
 |---------|-------------|
 | `.env` | Locale `fr`, faker `fr_FR` |
+| `.env` (prod) | Cache et sessions → Redis |
 | `composer.json` | Dépendances du projet |
-| `routes/web.php` | Route `articles.og-image` + import contrôleur |
+| `bootstrap/app.php` | Route OG image avec middleware minimal (SubstituteBindings uniquement) |
+| `routes/web.php` | Suppression de la route OG image |
 | `app/Models/Article.php` | `meta_description` + `og_image` + `og_text` fillable, accessors `seoDescription` + `ogImageUrl` |
 | `database/factories/ArticleFactory.php` | `meta_description` dans la factory |
+| `app/Http/Controllers/OgImageController.php` | Police embarquée, design simplifié (dégradé noir→rouge + texte or→corail) |
 | `app/Livewire/Dashboard/ArticleForm.php` | Meta description + upload OG image + og_text + WithFileUploads |
 | `resources/views/livewire/dashboard/article-form.blade.php` | Champs meta description + upload OG image + og_text |
-| `resources/views/layouts/public.blade.php` | Props SEO, includes partials, titre dynamique |
-| `resources/views/home.blade.php` | Titre + description SEO + layout 2 featured + vignettes OG |
+| `resources/views/layouts/public.blade.php` | Props SEO, includes partials, titre dynamique, fonts non-bloquantes |
+| `resources/views/home.blade.php` | Titre + description SEO + layout 2 featured + vignettes OG avec dimensions |
 | `app/Http/Controllers/HomeController.php` | 2 featured + 3 récents (sans doublons) |
-| `resources/views/articles/index.blade.php` | Titre + description + breadcrumbs + vignette OG |
+| `resources/views/articles/index.blade.php` | Titre + description + breadcrumbs + vignette OG avec dimensions |
 | `resources/views/articles/show.blade.php` | Titre + description + OG image + OG article + breadcrumbs |
 | `resources/views/about.blade.php` | Titre + description + breadcrumbs SEO |
 | `resources/views/components/public/footer.blade.php` | Liens RSS et GitHub fonctionnels |
@@ -553,6 +704,8 @@ Les points suivants restent à implémenter :
 - [ ] Sitemap XML dynamique (`/sitemap.xml`)
 - [ ] Flux RSS fonctionnel (`/feed`)
 - [ ] Fil d'Ariane visuel dans les pages
-- [ ] Optimisation du chargement des fonts
+- [x] ~~Optimisation du chargement des fonts~~ (fait — section 14a/14b)
 - [ ] Section "Articles connexes" en bas des articles
 - [ ] Inscription à Google Search Console + soumission du sitemap
+- [ ] Image OG par défaut (`public/images/og-default.png`)
+- [ ] Cache navigateur Nginx pour les assets Vite (section 14d)
