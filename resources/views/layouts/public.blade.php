@@ -30,6 +30,9 @@
         'article' => $seoArticle,
     ])
 
+    {{-- RSS feed discovery --}}
+    <link rel="alternate" type="application/rss+xml" title="{{ $appName }}" href="{{ route('feed') }}">
+
     {{-- Fonts (non-render-blocking) --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

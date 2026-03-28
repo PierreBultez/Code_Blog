@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\OgImageController;
+use App\Http\Controllers\RssFeedController;
 use App\Http\Controllers\SitemapController;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -19,6 +20,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
             Route::get('/sitemap.xml', SitemapController::class)
                 ->name('sitemap');
+
+            Route::get('/feed', RssFeedController::class)
+                ->name('feed');
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
