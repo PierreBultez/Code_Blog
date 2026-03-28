@@ -8,7 +8,7 @@
     ]"
 >
 
-    <section class="max-w-4xl mx-auto px-6 pt-20 pb-12">
+    <section class="max-w-4xl mx-auto px-6 pt-6 pb-12">
         {{-- Header --}}
         <header class="mb-16">
             <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight text-on-surface mb-4">Manuscrits</h1>

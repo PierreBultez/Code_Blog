@@ -62,6 +62,24 @@
 <body class="bg-background text-on-background font-sans selection:bg-primary-container selection:text-on-primary-container antialiased min-h-screen">
     <x-public.navbar :active="$navActive ?? ''" />
 
+    @if (count($seoBreadcrumbs) > 1)
+        <nav aria-label="Fil d'Ariane" class="max-w-4xl mx-auto px-6 pt-20 pb-0">
+            <ol class="flex flex-wrap items-center gap-1 text-sm text-on-surface-variant">
+                @foreach ($seoBreadcrumbs as $i => $crumb)
+                    @if ($i > 0)
+                        <li aria-hidden="true" class="select-none">/</li>
+                    @endif
+
+                    @if ($i === count($seoBreadcrumbs) - 1)
+                        <li aria-current="page" class="text-on-surface font-medium truncate max-w-xs">{{ $crumb['name'] }}</li>
+                    @else
+                        <li><a href="{{ $crumb['url'] }}" class="hover:text-on-surface transition-colors">{{ $crumb['name'] }}</a></li>
+                    @endif
+                @endforeach
+            </ol>
+        </nav>
+    @endif
+
     <main>
         {{ $slot }}
     </main>

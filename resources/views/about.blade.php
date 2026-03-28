@@ -8,7 +8,7 @@
     ]"
 >
 
-    <section class="pt-32 pb-20 px-6 max-w-5xl mx-auto">
+    <section class="pt-6 pb-20 px-6 max-w-5xl mx-auto">
         {{-- Hero --}}
         <div class="mb-20">
             <h1 class="font-headline font-extrabold text-5xl md:text-7xl tracking-tighter text-primary mb-6">Salut, moi c'est Pierre.</h1>

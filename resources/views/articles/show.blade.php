@@ -12,7 +12,7 @@
     ]"
 >
 
-    <article class="max-w-4xl mx-auto px-6 mt-20">
+    <article class="max-w-4xl mx-auto px-6 mt-6">
         {{-- Header --}}
         <header class="mb-12">
             <div class="flex items-center gap-4 mb-6 text-sm font-medium tracking-wide">
