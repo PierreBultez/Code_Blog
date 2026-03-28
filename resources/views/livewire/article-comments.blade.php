@@ -21,7 +21,7 @@
                             <p class="text-xs text-on-surface-variant">{{ $comment->created_at->diffForHumans() }}</p>
                         </div>
                     </div>
-                    <div class="text-on-surface-variant leading-relaxed whitespace-pre-line">{!! preg_replace('/@(\w+)/', '<span class="text-primary font-semibold">@$1</span>', e($comment->content)) !!}</div>
+                    <div class="text-on-surface-variant leading-relaxed whitespace-pre-line">{!! $comment->formatted_content !!}</div>
                 </div>
             @endforeach
         </div>

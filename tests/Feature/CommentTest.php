@@ -159,6 +159,24 @@ it('can delete a comment from the dashboard', function () {
     ]);
 });
 
+it('formats @mentions in formatted_content accessor', function () {
+    $comment = Comment::factory()->create(['content' => 'Merci @Pierre pour cet article !']);
+
+    expect($comment->formatted_content)
+        ->toContain('<span class="text-primary font-semibold">@Pierre</span>')
+        ->toContain('Merci')
+        ->toContain('pour cet article !');
+});
+
+it('escapes HTML in formatted_content to prevent XSS', function () {
+    $comment = Comment::factory()->create(['content' => '<script>alert("xss")</script> @User']);
+
+    expect($comment->formatted_content)
+        ->not->toContain('<script>')
+        ->toContain('&lt;script&gt;')
+        ->toContain('<span class="text-primary font-semibold">@User</span>');
+});
+
 it('can mark all comments as read', function () {
     $user = User::factory()->create();
     $this->actingAs($user);

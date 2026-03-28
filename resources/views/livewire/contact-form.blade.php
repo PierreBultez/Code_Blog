@@ -66,6 +66,11 @@
                 ></textarea>
                 @error('message') <p id="error-contact-message" role="alert" class="text-red-500 text-sm ml-1">{{ $message }}</p> @enderror
             </div>
+            {{-- Honeypot --}}
+            <div class="hidden" aria-hidden="true">
+                <input wire:model="honeypot" type="text" tabindex="-1" autocomplete="off" />
+            </div>
+
             <button
                 type="submit"
                 class="w-full bg-primary text-on-primary py-4 rounded-lg font-bold text-lg hover:bg-primary-container transition-all flex items-center justify-center gap-2 group"

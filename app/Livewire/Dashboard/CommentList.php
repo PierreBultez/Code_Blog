@@ -3,6 +3,7 @@
 namespace App\Livewire\Dashboard;
 
 use App\Models\Comment;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -12,6 +13,14 @@ class CommentList extends Component
 
     public function deleteComment(Comment $comment): void
     {
+        Log::channel('single')->info('Comment deleted', [
+            'comment_id' => $comment->id,
+            'author' => $comment->author_name,
+            'article_id' => $comment->article_id,
+            'user_id' => auth()->id(),
+            'ip' => request()->ip(),
+        ]);
+
         $comment->delete();
         $this->resetPage();
     }

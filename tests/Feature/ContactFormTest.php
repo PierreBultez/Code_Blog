@@ -4,6 +4,7 @@ use App\Livewire\ContactForm;
 use App\Mail\ContactConfirmationMail;
 use App\Mail\ContactMessageMail;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Livewire;
 
 it('renders the contact form on the about page', function () {
@@ -70,4 +71,49 @@ it('validates subject is in allowed list', function () {
         ->set('message', 'Un message suffisamment long.')
         ->call('send')
         ->assertHasErrors(['subject']);
+});
+
+it('silently discards honeypot submissions without sending emails', function () {
+    Mail::fake();
+
+    Livewire::test(ContactForm::class)
+        ->set('name', 'Bot')
+        ->set('email', 'bot@spam.com')
+        ->set('subject', 'Développement')
+        ->set('message', 'Buy cheap stuff now!')
+        ->set('honeypot', 'I am a bot')
+        ->call('send')
+        ->assertHasNoErrors()
+        ->assertSet('sent', true)
+        ->assertSet('name', '')
+        ->assertSet('email', '');
+
+    Mail::assertNothingSent();
+});
+
+it('rate limits contact form submissions', function () {
+    Mail::fake();
+    RateLimiter::clear('contact:127.0.0.1');
+
+    $component = Livewire::test(ContactForm::class);
+
+    for ($i = 0; $i < 3; $i++) {
+        $component
+            ->set('name', 'Jean')
+            ->set('email', 'jean@example.com')
+            ->set('subject', 'Développement')
+            ->set('message', 'Message de test numéro '.($i + 1))
+            ->call('send');
+    }
+
+    $component
+        ->set('sent', false)
+        ->set('name', 'Jean')
+        ->set('email', 'jean@example.com')
+        ->set('subject', 'Développement')
+        ->set('message', 'Ce message devrait être bloqué.')
+        ->call('send')
+        ->assertHasErrors(['message']);
+
+    Mail::assertSentCount(6); // 3 contact + 3 confirmation
 });

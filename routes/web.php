@@ -21,7 +21,7 @@ Route::redirect('/register', '/login');
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('dashboard', 'dashboard')->name('dashboard');
 
-    Route::post('/tinymce/upload', TinyMceUploadController::class)->name('tinymce.upload');
+    Route::post('/tinymce/upload', TinyMceUploadController::class)->middleware('throttle:10,1')->name('tinymce.upload');
 
     Route::prefix('dashboard')->name('dashboard.')->group(function () {
         Route::get('/articles', ArticleList::class)->name('articles.index');

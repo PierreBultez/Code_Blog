@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
+use Stevebauman\Purify\Facades\Purify;
 
 class ArticleForm extends Component
 {
@@ -90,7 +91,7 @@ class ArticleForm extends Component
         $this->article->excerpt = $this->excerpt;
         $this->article->meta_description = $this->meta_description ?: null;
         $this->article->og_text = $this->og_text ?: null;
-        $this->article->content = $this->content;
+        $this->article->content = Purify::clean($this->content);
         $this->article->is_published = $this->is_published;
 
         // Gestion de l'image OG
