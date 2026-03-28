@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -14,20 +15,51 @@ class OgImageController extends Controller
 
     private const FONT_BOLD_PATH = __DIR__.'/../../../storage/fonts/DejaVuSans-Bold.ttf';
 
-    public function __invoke(Article $article): Response
+    private const ALLOWED_WIDTHS = [400, 800, 1200];
+
+    public function __invoke(Article $article, Request $request): Response
     {
         abort_unless($article->is_published, 404);
 
-        $cacheKey = "og-image-{$article->id}-{$article->updated_at->timestamp}";
+        $width = $this->resolveWidth($request);
+        $cacheKey = "og-image-{$article->id}-{$article->updated_at->timestamp}-w{$width}";
 
-        $imageData = Cache::remember($cacheKey, now()->addDays(7), function () use ($article) {
-            return $this->generateImage($article);
+        $imageData = Cache::remember($cacheKey, now()->addYear(), function () use ($article, $width) {
+            $fullImage = $this->generateImage($article);
+
+            if ($width < self::WIDTH) {
+                return $this->resizeImage($fullImage, $width);
+            }
+
+            return $fullImage;
         });
 
         return response($imageData, 200, [
             'Content-Type' => 'image/png',
-            'Cache-Control' => 'public, max-age=604800',
+            'Cache-Control' => 'public, max-age=31536000, immutable',
         ]);
+    }
+
+    private function resolveWidth(Request $request): int
+    {
+        $w = (int) $request->query('w', self::WIDTH);
+
+        return in_array($w, self::ALLOWED_WIDTHS) ? $w : self::WIDTH;
+    }
+
+    private function resizeImage(string $imageData, int $targetWidth): string
+    {
+        $image = imagecreatefromstring($imageData);
+        $targetHeight = (int) round($targetWidth * self::HEIGHT / self::WIDTH);
+        $resized = imagescale($image, $targetWidth, $targetHeight);
+
+        ob_start();
+        imagepng($resized, null, 9);
+        $data = ob_get_clean();
+        imagedestroy($image);
+        imagedestroy($resized);
+
+        return $data;
     }
 
     private function generateImage(Article $article): string

@@ -20,7 +20,8 @@
             @foreach ($featuredArticles as $featured)
                 <article class="group relative overflow-hidden bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-100 dark:border-zinc-800 transition-all hover:shadow-2xl hover:shadow-primary/5 active:scale-[0.99] duration-300 flex flex-col">
                     <a href="{{ route('articles.show', $featured) }}" aria-label="{{ $featured->title }}" class="absolute inset-0 z-10 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-3xl"></a>
-                    <img src="{{ $featured->og_image_url }}" alt="{{ $featured->title }}" width="1200" height="630" class="w-full aspect-[1.91/1] object-cover" loading="eager">
+                    @php $srcset = $featured->ogImageSrcset(); @endphp
+                    <img src="{{ $featured->og_image_url }}" @if($srcset) srcset="{{ $srcset }}" sizes="(min-width: 768px) 33vw, 100vw" @endif alt="{{ $featured->title }}" width="1200" height="630" class="w-full aspect-[1.91/1] object-cover" loading="eager">
                     <div class="flex flex-col flex-1 p-6">
                         <div class="flex items-center gap-3 mb-3">
                             @foreach ($featured->tags as $tag)
@@ -77,7 +78,8 @@
                     <article class="group relative">
                         <a href="{{ route('articles.show', $article) }}" aria-label="{{ $article->title }}" class="absolute inset-0 z-10 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-2xl"></a>
                         <div class="flex flex-col md:flex-row md:items-center gap-6 p-6 rounded-2xl hover:bg-white dark:hover:bg-zinc-900 transition-all border border-transparent hover:border-zinc-100 dark:hover:border-zinc-800">
-                            <img src="{{ $article->og_image_url }}" alt="{{ $article->title }}" width="1200" height="630" class="w-full md:w-40 lg:w-48 shrink-0 aspect-[1.91/1] object-cover rounded-lg" loading="lazy">
+                            @php $srcset = $article->ogImageSrcset(); @endphp
+                            <img src="{{ $article->og_image_url }}" @if($srcset) srcset="{{ $srcset }}" sizes="(min-width: 1024px) 192px, (min-width: 768px) 160px, 100vw" @endif alt="{{ $article->title }}" width="1200" height="630" class="w-full md:w-40 lg:w-48 shrink-0 aspect-[1.91/1] object-cover rounded-lg" loading="lazy">
                             <div class="flex-1">
                                 <div class="flex items-center gap-3 mb-1">
                                     @foreach ($article->tags as $tag)

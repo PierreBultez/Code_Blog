@@ -40,8 +40,10 @@
                     <a href="{{ route('articles.show', $article) }}" aria-label="{{ $article->title }}" class="absolute inset-0 z-10 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-xl"></a>
                     <div class="flex flex-col md:flex-row md:items-start gap-6">
                         <div class="md:w-48 lg:w-56 shrink-0">
+                            @php $srcset = $article->ogImageSrcset(); @endphp
                             <img
                                 src="{{ $article->og_image_url }}"
+                                @if($srcset) srcset="{{ $srcset }}" sizes="(min-width: 1024px) 224px, (min-width: 768px) 192px, 100vw" @endif
                                 alt="{{ $article->title }}"
                                 width="1200"
                                 height="630"

@@ -77,6 +77,20 @@ class Article extends Model
     }
 
     /**
+     * @param  array<int, int>  $widths
+     */
+    public function ogImageSrcset(array $widths = [400, 800, 1200]): string
+    {
+        if ($this->og_image) {
+            return '';
+        }
+
+        return collect($widths)
+            ->map(fn (int $w): string => route('articles.og-image', $this)."?w={$w} {$w}w")
+            ->implode(', ');
+    }
+
+    /**
      * @return Attribute<int, never>
      */
     protected function readingTime(): Attribute
