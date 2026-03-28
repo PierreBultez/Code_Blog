@@ -54,12 +54,12 @@
                         <div x-data="{ count: 0, target: {{ $stats['articles'] }} }" x-intersect.once="if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { $data.count = $data.target; return; } let start = performance.now(); let duration = 1500; (function step(now) { let progress = Math.min((now - start) / duration, 1); $data.count = Math.floor(progress * $data.target); if (progress < 1) requestAnimationFrame(step); })(start);">
                             <p class="text-4xl font-black tabular-nums" x-text="count" aria-hidden="true">0</p>
                             <span class="sr-only">{{ $stats['articles'] }}</span>
-                            <p class="text-sm opacity-80 mt-1">articles</p>
+                            <p class="text-sm mt-1">articles</p>
                         </div>
                         <div x-data="{ count: 0, target: {{ $stats['tags'] }} }" x-intersect.once="if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { $data.count = $data.target; return; } let start = performance.now(); let duration = 1500; (function step(now) { let progress = Math.min((now - start) / duration, 1); $data.count = Math.floor(progress * $data.target); if (progress < 1) requestAnimationFrame(step); })(start);">
                             <p class="text-4xl font-black tabular-nums" x-text="count" aria-hidden="true">0</p>
                             <span class="sr-only">{{ $stats['tags'] }}</span>
-                            <p class="text-sm opacity-80 mt-1">sujets</p>
+                            <p class="text-sm mt-1">sujets</p>
                         </div>
                     </div>
                 </div>
