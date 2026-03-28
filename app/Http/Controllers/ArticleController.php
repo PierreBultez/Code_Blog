@@ -37,6 +37,21 @@ class ArticleController extends Controller
 
         $article->load('tags');
 
-        return view('articles.show', compact('article'));
+        $tagIds = $article->tags->pluck('id');
+
+        $relatedArticles = $tagIds->isNotEmpty()
+            ? Article::query()
+                ->published()
+                ->where('id', '!=', $article->id)
+                ->whereHas('tags', fn ($q) => $q->whereIn('tags.id', $tagIds))
+                ->withCount(['tags as shared_tags_count' => fn ($q) => $q->whereIn('tags.id', $tagIds)])
+                ->orderByDesc('shared_tags_count')
+                ->latest('published_at')
+                ->with('tags')
+                ->take(3)
+                ->get()
+            : collect();
+
+        return view('articles.show', compact('article', 'relatedArticles'));
     }
 }

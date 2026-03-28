@@ -44,6 +44,27 @@
             {!! $article->content !!}
         </section>
 
+        {{-- Articles connexes --}}
+        @if ($relatedArticles->isNotEmpty())
+            <section class="mt-16 pt-12 border-t border-outline-variant">
+                <h2 class="text-2xl font-bold text-on-surface mb-8">Articles connexes</h2>
+                <div class="grid gap-6 md:grid-cols-3">
+                    @foreach ($relatedArticles as $related)
+                        <a href="{{ route('articles.show', $related) }}" class="group block">
+                            <img src="{{ $related->og_image_url }}" alt="{{ $related->title }}" width="1200" height="630" class="w-full aspect-[1.91/1] object-cover rounded-lg mb-3" loading="lazy">
+                            <div class="flex items-center gap-2 mb-2 text-xs text-outline">
+                                @foreach ($related->tags->take(2) as $tag)
+                                    <span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full uppercase font-medium">{{ $tag->name }}</span>
+                                @endforeach
+                                <time datetime="{{ $related->published_at?->toDateString() }}">{{ $related->published_at?->translatedFormat('d M Y') }}</time>
+                            </div>
+                            <h3 class="font-bold text-on-surface group-hover:text-primary transition-colors line-clamp-2">{{ $related->title }}</h3>
+                        </a>
+                    @endforeach
+                </div>
+            </section>
+        @endif
+
         {{-- Discussion --}}
         <livewire:article-comments :article="$article" />
     </article>
