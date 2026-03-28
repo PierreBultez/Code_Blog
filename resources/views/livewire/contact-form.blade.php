@@ -1,7 +1,7 @@
 <div class="bg-surface-container border border-outline-variant p-8 md:p-10 rounded-xl shadow-xl">
     @if ($sent)
         <div class="text-center py-8 space-y-4">
-            <span class="material-symbols-outlined text-emerald-500 text-5xl">check_circle</span>
+            <span class="material-symbols-outlined text-emerald-500 text-5xl" aria-hidden="true">check_circle</span>
             <h3 class="font-headline font-bold text-2xl text-on-surface">Message envoyé !</h3>
             <p class="text-on-surface-variant">Merci pour votre message. Vous recevrez une confirmation par email.</p>
             <button
@@ -21,22 +21,25 @@
                         id="name"
                         type="text"
                         placeholder="Jean Dupont"
+                        aria-describedby="error-contact-name"
                         class="w-full bg-background border border-outline-variant rounded-lg p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-on-surface"
                     />
-                    @error('name') <p class="text-red-500 text-sm ml-1">{{ $message }}</p> @enderror
+                    @error('name') <p id="error-contact-name" role="alert" class="text-red-500 text-sm ml-1">{{ $message }}</p> @enderror
                 </div>
                 <div class="space-y-2">
                     <label for="subject" class="text-sm font-bold text-on-surface-variant ml-1">Sujet</label>
                     <select
                         wire:model="subject"
                         id="subject"
+                        aria-describedby="error-contact-subject"
                         class="w-full bg-background border border-outline-variant rounded-lg p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-on-surface"
                     >
+                        <option value="" disabled selected>Choisir un sujet...</option>
                         <option>Développement</option>
                         <option>Infrastructure / SysAdmin</option>
                         <option>Autre</option>
                     </select>
-                    @error('subject') <p class="text-red-500 text-sm ml-1">{{ $message }}</p> @enderror
+                    @error('subject') <p id="error-contact-subject" role="alert" class="text-red-500 text-sm ml-1">{{ $message }}</p> @enderror
                 </div>
             </div>
             <div class="space-y-2">
@@ -46,9 +49,10 @@
                     id="email"
                     type="email"
                     placeholder="jean@example.com"
+                    aria-describedby="error-contact-email"
                     class="w-full bg-background border border-outline-variant rounded-lg p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-on-surface"
                 />
-                @error('email') <p class="text-red-500 text-sm ml-1">{{ $message }}</p> @enderror
+                @error('email') <p id="error-contact-email" role="alert" class="text-red-500 text-sm ml-1">{{ $message }}</p> @enderror
             </div>
             <div class="space-y-2">
                 <label for="message" class="text-sm font-bold text-on-surface-variant ml-1">Message</label>
@@ -57,9 +61,10 @@
                     id="message"
                     placeholder="Votre message ici..."
                     rows="4"
+                    aria-describedby="error-contact-message"
                     class="w-full bg-background border border-outline-variant rounded-lg p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none text-on-surface"
                 ></textarea>
-                @error('message') <p class="text-red-500 text-sm ml-1">{{ $message }}</p> @enderror
+                @error('message') <p id="error-contact-message" role="alert" class="text-red-500 text-sm ml-1">{{ $message }}</p> @enderror
             </div>
             <button
                 type="submit"
@@ -69,8 +74,8 @@
             >
                 <span wire:loading.remove>Envoyer le message</span>
                 <span wire:loading>Envoi en cours...</span>
-                <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" wire:loading.remove>send</span>
-                <span class="material-symbols-outlined animate-spin" wire:loading>progress_activity</span>
+                <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" wire:loading.remove aria-hidden="true">send</span>
+                <span class="material-symbols-outlined animate-spin" wire:loading aria-hidden="true">progress_activity</span>
             </button>
         </form>
     @endif

@@ -25,21 +25,28 @@
             x-data="{ dark: localStorage.getItem('theme') === 'dark' }"
             x-init="$watch('dark', val => { localStorage.setItem('theme', val ? 'dark' : 'light'); document.documentElement.classList.toggle('dark', val) }); document.documentElement.classList.toggle('dark', dark)"
             x-on:click="dark = !dark"
+            x-bind:aria-label="dark ? 'Activer le mode clair' : 'Activer le mode sombre'"
             class="p-2 hover:bg-zinc-100/50 dark:hover:bg-zinc-800/50 rounded-full transition-all active:scale-95 duration-200 ease-in-out"
         >
-            <span x-show="!dark" class="material-symbols-outlined text-zinc-600 dark:text-zinc-400">dark_mode</span>
-            <span x-show="dark" x-cloak class="material-symbols-outlined text-zinc-600 dark:text-zinc-400">light_mode</span>
+            <span x-show="!dark" aria-hidden="true" class="material-symbols-outlined text-zinc-600 dark:text-zinc-400">dark_mode</span>
+            <span x-show="dark" x-cloak aria-hidden="true" class="material-symbols-outlined text-zinc-600 dark:text-zinc-400">light_mode</span>
         </button>
 
         {{-- Mobile menu toggle --}}
-        <button x-on:click="open = !open" class="md:hidden p-2 hover:bg-zinc-100/50 dark:hover:bg-zinc-800/50 rounded-full transition-all">
-            <span x-show="!open" class="material-symbols-outlined text-zinc-600 dark:text-zinc-400">menu</span>
-            <span x-show="open" x-cloak class="material-symbols-outlined text-zinc-600 dark:text-zinc-400">close</span>
+        <button
+            x-on:click="open = !open"
+            x-bind:aria-expanded="open"
+            x-bind:aria-label="open ? 'Fermer le menu' : 'Ouvrir le menu'"
+            aria-controls="mobile-menu"
+            class="md:hidden p-2 hover:bg-zinc-100/50 dark:hover:bg-zinc-800/50 rounded-full transition-all"
+        >
+            <span x-show="!open" aria-hidden="true" class="material-symbols-outlined text-zinc-600 dark:text-zinc-400">menu</span>
+            <span x-show="open" x-cloak aria-hidden="true" class="material-symbols-outlined text-zinc-600 dark:text-zinc-400">close</span>
         </button>
     </div>
 
     {{-- Mobile menu --}}
-    <div x-show="open" x-cloak x-transition class="absolute top-full left-0 right-0 mt-2 mx-4 p-4 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md rounded-2xl border border-white/20 dark:border-zinc-800/50 shadow-xl md:hidden">
+    <div x-show="open" x-cloak x-transition x-on:keydown.escape.window="open = false" id="mobile-menu" class="absolute top-full left-0 right-0 mt-2 mx-4 p-4 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md rounded-2xl border border-white/20 dark:border-zinc-800/50 shadow-xl md:hidden">
         <div class="flex flex-col gap-3">
             <a href="{{ route('home') }}" class="{{ $active === 'home' ? 'text-primary font-bold' : 'text-zinc-600 dark:text-zinc-400' }} px-4 py-2 rounded-lg hover:bg-zinc-100/50 dark:hover:bg-zinc-800/50 transition-colors">Accueil</a>
             <a href="{{ route('articles.index') }}" class="{{ $active === 'articles' ? 'text-primary font-bold' : 'text-zinc-600 dark:text-zinc-400' }} px-4 py-2 rounded-lg hover:bg-zinc-100/50 dark:hover:bg-zinc-800/50 transition-colors">Articles</a>

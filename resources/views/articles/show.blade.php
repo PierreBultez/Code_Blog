@@ -21,7 +21,7 @@
                         {{ $tag->name }}
                     </span>
                 @endforeach
-                <time class="text-outline" datetime="{{ $article->published_at?->toDateString() }}">
+                <time class="text-on-surface-variant" datetime="{{ $article->published_at?->toDateString() }}">
                     {{ $article->published_at?->translatedFormat('d M Y') }}
                 </time>
             </div>
@@ -30,11 +30,11 @@
             </h1>
             <div class="flex items-center gap-4">
                 <div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center">
-                    <span class="material-symbols-outlined text-primary">person</span>
+                    <span class="material-symbols-outlined text-primary" aria-hidden="true">person</span>
                 </div>
                 <div>
                     <p class="font-bold text-on-surface">Pierre</p>
-                    <p class="text-xs text-outline font-medium">{{ $article->reading_time }} min de lecture</p>
+                    <p class="text-xs text-on-surface-variant font-medium">{{ $article->reading_time }} min de lecture</p>
                 </div>
             </div>
         </header>
@@ -46,13 +46,13 @@
 
         {{-- Articles connexes --}}
         @if ($relatedArticles->isNotEmpty())
-            <section class="mt-16 pt-12 border-t border-outline-variant">
-                <h2 class="text-2xl font-bold text-on-surface mb-8">Articles connexes</h2>
+            <section class="mt-16 pt-12 border-t border-outline-variant" aria-labelledby="related-articles-heading">
+                <h2 id="related-articles-heading" class="text-2xl font-bold text-on-surface mb-8">Articles connexes</h2>
                 <div class="grid gap-6 md:grid-cols-3">
                     @foreach ($relatedArticles as $related)
                         <a href="{{ route('articles.show', $related) }}" class="group block">
                             <img src="{{ $related->og_image_url }}" alt="{{ $related->title }}" width="1200" height="630" class="w-full aspect-[1.91/1] object-cover rounded-lg mb-3" loading="lazy">
-                            <div class="flex items-center gap-2 mb-2 text-xs text-outline">
+                            <div class="flex items-center gap-2 mb-2 text-xs text-on-surface-variant">
                                 @foreach ($related->tags->take(2) as $tag)
                                     <span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full uppercase font-medium">{{ $tag->name }}</span>
                                 @endforeach

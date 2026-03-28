@@ -60,6 +60,10 @@
     ])
 </head>
 <body class="bg-background text-on-background font-sans selection:bg-primary-container selection:text-on-primary-container antialiased min-h-screen">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:bg-primary focus:text-on-primary focus:px-4 focus:py-2 focus:rounded-lg focus:font-bold focus:shadow-lg">
+        Aller au contenu
+    </a>
+
     <x-public.navbar :active="$navActive ?? ''" />
 
     @if (count($seoBreadcrumbs) > 1)
@@ -80,7 +84,7 @@
         </nav>
     @endif
 
-    <main>
+    <main id="main-content">
         {{ $slot }}
     </main>
 

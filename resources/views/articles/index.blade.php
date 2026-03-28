@@ -17,25 +17,27 @@
 
         {{-- Tag Filters --}}
         @if ($tags->isNotEmpty())
-            <div class="flex flex-wrap gap-3 mb-12">
+            <nav aria-label="Filtrer par sujet" class="flex flex-wrap gap-3 mb-12">
                 <a href="{{ route('articles.index') }}"
+                   @if (!$activeTag) aria-current="page" @endif
                    class="font-mono text-xs uppercase tracking-wider px-4 py-2 rounded-full border transition-all {{ !$activeTag ? 'bg-primary text-on-primary border-primary' : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary' }}">
                     Tous
                 </a>
                 @foreach ($tags as $tag)
                     <a href="{{ route('articles.index', ['tag' => $tag->slug]) }}"
+                       @if ($activeTag === $tag->slug) aria-current="page" @endif
                        class="font-mono text-xs uppercase tracking-wider px-4 py-2 rounded-full border transition-all {{ $activeTag === $tag->slug ? 'bg-primary text-on-primary border-primary' : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary' }}">
                         {{ $tag->name }}
                     </a>
                 @endforeach
-            </div>
+            </nav>
         @endif
 
         {{-- Articles List --}}
         <div class="space-y-6">
             @forelse ($articles as $article)
                 <article class="group relative p-8 rounded-xl border border-outline-variant/30 bg-surface/40 hover:bg-surface/80 backdrop-blur-sm transition-all duration-300 hover:shadow-2xl hover:shadow-primary/5 active:scale-[0.99]">
-                    <a href="{{ route('articles.show', $article) }}" class="absolute inset-0 z-10"></a>
+                    <a href="{{ route('articles.show', $article) }}" aria-label="{{ $article->title }}" class="absolute inset-0 z-10 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-xl"></a>
                     <div class="flex flex-col md:flex-row md:items-start gap-6">
                         <div class="md:w-48 lg:w-56 shrink-0">
                             <img
@@ -63,7 +65,7 @@
                             <p class="text-on-surface-variant line-clamp-2 mb-4">
                                 {{ $article->excerpt }}
                             </p>
-                            <div class="flex items-center gap-4 text-sm text-outline">
+                            <div class="flex items-center gap-4 text-sm text-on-surface-variant">
                                 <span>{{ $article->published_at?->translatedFormat('d M Y') }}</span>
                                 <span class="w-1 h-1 bg-outline-variant rounded-full"></span>
                                 <span>{{ $article->reading_time }} min de lecture</span>

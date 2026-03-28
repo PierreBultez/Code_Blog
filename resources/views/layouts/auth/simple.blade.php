@@ -12,7 +12,7 @@
                     </span>
                     <span class="sr-only">{{ config('app.name', 'Laravel') }}</span>
                 </a>
-                <div class="flex flex-col gap-6">
+                <div class="flex flex-col gap-6" lang="en">
                     {{ $slot }}
                 </div>
             </div>

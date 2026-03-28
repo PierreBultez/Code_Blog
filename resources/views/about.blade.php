@@ -23,11 +23,11 @@
                     <div class="w-24 h-24 rounded-full mb-6 overflow-hidden border-2 border-primary/20">
                         <img src="{{ asset('images/photo-profil.avif') }}" alt="Pierre — Photo de profil" class="w-full h-full object-cover" />
                     </div>
-                    <h3 class="font-headline font-bold text-2xl mb-2 text-on-surface">Pierre</h3>
+                    <h2 class="font-headline font-bold text-2xl mb-2 text-on-surface">Pierre</h2>
                     <p class="text-primary font-mono text-sm mb-4">pierre.bultez@proton.me:~#</p>
                     <p class="text-on-surface-variant leading-relaxed">Freelance spécialisé Laravel. Ce blog me sert de mémoire technique — et si ça peut aider d'autres devs au passage, tant mieux.</p>
                 </div>
-                <div class="flex gap-4 mt-8">
+                <div class="flex gap-4 mt-8" aria-hidden="true">
                     <span class="material-symbols-outlined text-primary">terminal</span>
                     <span class="material-symbols-outlined text-primary">code</span>
                     <span class="material-symbols-outlined text-primary">database</span>
@@ -49,40 +49,40 @@
                     <p><span class="text-emerald-400">➜</span> <span class="text-secondary">status</span> check --system</p>
                     <p class="pl-4 text-red-400 animate-pulse">● System Operational - Uptime: 99.9%</p>
                 </div>
-                <div class="absolute right-10 bottom-10 opacity-30">
+                <div class="absolute right-10 bottom-10 opacity-30" aria-hidden="true">
                     <span class="material-symbols-outlined text-[200px]">settings_ethernet</span>
                 </div>
             </div>
 
             {{-- Philosophie --}}
             <div class="col-span-12 lg:col-span-7 bg-primary-container text-on-primary-container p-8 rounded-xl flex flex-col justify-center">
-                <h4 class="font-headline font-bold text-3xl mb-4">Pourquoi ce blog</h4>
+                <h2 class="font-headline font-bold text-3xl mb-4">Pourquoi ce blog</h2>
                 <p class="text-lg opacity-90 leading-relaxed">Plutôt que de redemander la même chose à une IA ou de fouiller dans mes anciens projets, j'écris ici ce qui fonctionne. Des notes claires, des exemples concrets, pour moi d'abord — et pour ceux que ça intéresse.</p>
             </div>
 
             {{-- Social Links --}}
             <div class="col-span-12 lg:col-span-5 grid grid-cols-2 gap-4">
-                <a href="https://github.com/PierreBultez" target="_blank" class="bg-surface/40 backdrop-blur-sm border border-outline-variant/30 p-6 rounded-xl flex items-center justify-center hover:bg-primary/5 transition-all">
+                <a href="https://github.com/PierreBultez" target="_blank" rel="noopener noreferrer" class="bg-surface/40 backdrop-blur-sm border border-outline-variant/30 p-6 rounded-xl flex items-center justify-center hover:bg-primary/5 transition-all">
                     <div class="text-center">
-                        <span class="material-symbols-outlined text-primary text-3xl mb-2">commit</span>
+                        <span class="material-symbols-outlined text-primary text-3xl mb-2" aria-hidden="true">commit</span>
                         <p class="font-bold text-on-surface">GitHub</p>
                     </div>
                 </a>
-                <a href="https://www.linkedin.com/in/pierre-bultez-5699b52a8/" target="_blank" class="bg-surface/40 backdrop-blur-sm border border-outline-variant/30 p-6 rounded-xl flex items-center justify-center hover:bg-primary/5 transition-all">
+                <a href="https://www.linkedin.com/in/pierre-bultez-5699b52a8/" target="_blank" rel="noopener noreferrer" class="bg-surface/40 backdrop-blur-sm border border-outline-variant/30 p-6 rounded-xl flex items-center justify-center hover:bg-primary/5 transition-all">
                     <div class="text-center">
-                        <span class="material-symbols-outlined text-primary text-3xl mb-2">add_reaction</span>
+                        <span class="material-symbols-outlined text-primary text-3xl mb-2" aria-hidden="true">add_reaction</span>
                         <p class="font-bold text-on-surface">LinkedIn</p>
                     </div>
                 </a>
-                <a href="https://pierrebultez.com" target="_blank" class="bg-surface/40 backdrop-blur-sm border border-outline-variant/30 p-6 rounded-xl flex items-center justify-center hover:bg-primary/5 transition-all">
+                <a href="https://pierrebultez.com" target="_blank" rel="noopener noreferrer" class="bg-surface/40 backdrop-blur-sm border border-outline-variant/30 p-6 rounded-xl flex items-center justify-center hover:bg-primary/5 transition-all">
                     <div class="text-center">
-                        <span class="material-symbols-outlined text-primary text-3xl mb-2">alternate_email</span>
+                        <span class="material-symbols-outlined text-primary text-3xl mb-2" aria-hidden="true">alternate_email</span>
                         <p class="font-bold text-on-surface">Web</p>
                     </div>
                 </a>
-                <a href="https://cv.pierrebultez.com" target="_blank" class="bg-surface/40 backdrop-blur-sm border border-outline-variant/30 p-6 rounded-xl flex items-center justify-center hover:bg-primary/5 transition-all">
+                <a href="https://cv.pierrebultez.com" target="_blank" rel="noopener noreferrer" class="bg-surface/40 backdrop-blur-sm border border-outline-variant/30 p-6 rounded-xl flex items-center justify-center hover:bg-primary/5 transition-all">
                     <div class="text-center">
-                        <span class="material-symbols-outlined text-primary text-3xl mb-2">demography</span>
+                        <span class="material-symbols-outlined text-primary text-3xl mb-2" aria-hidden="true">demography</span>
                         <p class="font-bold text-on-surface">CV</p>
                     </div>
                 </a>
@@ -90,16 +90,16 @@
         </div>
 
         {{-- Contact Section --}}
-        <section class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start" aria-labelledby="contact-heading">
             <div class="space-y-8">
                 <div>
-                    <h2 class="font-headline font-extrabold text-4xl text-on-surface mb-4">Un mot à me dire ?</h2>
+                    <h2 id="contact-heading" class="font-headline font-extrabold text-4xl text-on-surface mb-4">Un mot à me dire ?</h2>
                     <p class="text-on-surface-variant text-lg">Une question sur un article, une suggestion, ou juste envie d'échanger — n'hésite pas.</p>
                 </div>
                 <div class="space-y-6">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                            <span class="material-symbols-outlined">mail</span>
+                            <span class="material-symbols-outlined" aria-hidden="true">mail</span>
                         </div>
                         <div>
                             <p class="text-xs text-on-surface-variant uppercase tracking-widest font-bold">Email</p>
@@ -108,7 +108,7 @@
                     </div>
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                            <span class="material-symbols-outlined">location_on</span>
+                            <span class="material-symbols-outlined" aria-hidden="true">location_on</span>
                         </div>
                         <div>
                             <p class="text-xs text-on-surface-variant uppercase tracking-widest font-bold">Localisation</p>

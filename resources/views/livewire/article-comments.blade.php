@@ -1,6 +1,6 @@
 <section class="mt-20 border-t border-outline-variant pt-16 pb-12">
     <h3 class="text-2xl font-bold font-headline mb-8 flex items-center gap-3 text-on-surface">
-        <span class="material-symbols-outlined text-primary">chat_bubble</span>
+        <span class="material-symbols-outlined text-primary" aria-hidden="true">chat_bubble</span>
         Discussion
         @if ($comments->count())
             <span class="text-base font-normal text-on-surface-variant">({{ $comments->count() }})</span>
@@ -18,7 +18,7 @@
                         </div>
                         <div>
                             <p class="font-bold text-on-surface text-sm">{{ $comment->author_name }}</p>
-                            <p class="text-xs text-outline">{{ $comment->created_at->diffForHumans() }}</p>
+                            <p class="text-xs text-on-surface-variant">{{ $comment->created_at->diffForHumans() }}</p>
                         </div>
                     </div>
                     <div class="text-on-surface-variant leading-relaxed whitespace-pre-line">{!! preg_replace('/@(\w+)/', '<span class="text-primary font-semibold">@$1</span>', e($comment->content)) !!}</div>
@@ -30,7 +30,7 @@
     {{-- Formulaire --}}
     @if ($sent)
         <div class="bg-surface-container border border-outline-variant rounded-xl p-8 text-center space-y-3">
-            <span class="material-symbols-outlined text-emerald-500 text-4xl">check_circle</span>
+            <span class="material-symbols-outlined text-emerald-500 text-4xl" aria-hidden="true">check_circle</span>
             <p class="text-on-surface font-bold">Commentaire publié !</p>
             <button
                 wire:click="$set('sent', false)"
@@ -51,9 +51,10 @@
                     type="text"
                     placeholder="Votre pseudo"
                     maxlength="50"
+                    aria-describedby="error-author-name"
                     class="w-full max-w-xs bg-background border border-outline-variant rounded-lg p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-on-surface"
                 />
-                @error('author_name') <p class="text-red-500 text-sm ml-1">{{ $message }}</p> @enderror
+                @error('author_name') <p id="error-author-name" role="alert" class="text-red-500 text-sm ml-1">{{ $message }}</p> @enderror
             </div>
 
             <div class="space-y-2">
@@ -64,9 +65,10 @@
                     placeholder="Votre commentaire... Utilisez @pseudo pour mentionner quelqu'un."
                     rows="4"
                     maxlength="2000"
+                    aria-describedby="error-comment-content"
                     class="w-full bg-background border border-outline-variant rounded-lg p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none text-on-surface"
                 ></textarea>
-                @error('content') <p class="text-red-500 text-sm ml-1">{{ $message }}</p> @enderror
+                @error('content') <p id="error-comment-content" role="alert" class="text-red-500 text-sm ml-1">{{ $message }}</p> @enderror
             </div>
 
             {{-- Honeypot --}}
@@ -82,8 +84,8 @@
             >
                 <span wire:loading.remove>Publier</span>
                 <span wire:loading>Publication...</span>
-                <span class="material-symbols-outlined text-lg" wire:loading.remove>send</span>
-                <span class="material-symbols-outlined text-lg animate-spin" wire:loading>progress_activity</span>
+                <span class="material-symbols-outlined text-lg" wire:loading.remove aria-hidden="true">send</span>
+                <span class="material-symbols-outlined text-lg animate-spin" wire:loading aria-hidden="true">progress_activity</span>
             </button>
         </form>
     @endif
