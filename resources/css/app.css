@@ -27,7 +27,7 @@
     --ds-on-surface-variant: #58413f;
     --ds-outline: #8c716e;
     --ds-outline-variant: #e0bfbc;
-    --ds-secondary: #006491;
+    --ds-secondary: oklch(67.3% 0.182 276.935);
     --ds-tertiary: #715c00;
     --ds-tertiary-container: #cca800;
     --ds-error: #ba1a1a;

@@ -47,7 +47,7 @@
                     <p><span class="text-emerald-400">➜</span> <span class="text-secondary">skills</span> list --category devops-and-tools</p>
                     <p class="pl-4 opacity-80">Ubuntu, Bash, Redis, Github Actions, Jetbrains</p>
                     <p><span class="text-emerald-400">➜</span> <span class="text-secondary">status</span> check --system</p>
-                    <p class="pl-4 text-red-400 animate-pulse">● System Operational - Uptime: 99.9%</p>
+                    <p class="pl-4 text-red-400">● System Operational - Uptime: 99.99%</p>
                 </div>
                 <div class="absolute right-10 bottom-10 opacity-30" aria-hidden="true">
                     <span class="material-symbols-outlined text-[200px]">settings_ethernet</span>
