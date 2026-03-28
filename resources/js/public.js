@@ -1,11 +1,12 @@
-import Alpine from 'alpinejs';
-import intersect from '@alpinejs/intersect';
-
-Alpine.plugin(intersect);
-
-window.Alpine = Alpine;
-
-Alpine.start();
+// Load Alpine asynchronously — does not block initial render/FCP/LCP
+Promise.all([
+    import('alpinejs'),
+    import('@alpinejs/intersect'),
+]).then(([{ default: Alpine }, { default: intersect }]) => {
+    Alpine.plugin(intersect);
+    window.Alpine = Alpine;
+    Alpine.start();
+});
 
 // Lazy-load Prism.js only on pages with code blocks
 if (document.querySelector('pre code')) {
