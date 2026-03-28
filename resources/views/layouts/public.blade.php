@@ -52,7 +52,7 @@
         }
     </script>
 
-    @vite(['resources/css/app.css', 'resources/js/public.js'])
+    @vite(['resources/css/public.css', 'resources/js/public.js'])
 
     @include('partials.structured-data', [
         'article' => $seoArticle,

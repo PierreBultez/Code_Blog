@@ -1,0 +1,147 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+@source '../views';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ── Design system tokens: light ── */
+:root {
+    --ds-primary: #87001e;
+    --ds-primary-container: #ae172f;
+    --ds-on-primary: #ffffff;
+    --ds-on-primary-container: #ffedec;
+    --ds-background: #fff8f7;
+    --ds-on-background: #23191b;
+    --ds-surface: #fff8f7;
+    --ds-on-surface: #23191b;
+    --ds-surface-container: #fde9eb;
+    --ds-surface-container-low: #fff0f1;
+    --ds-surface-container-high: #f7e4e6;
+    --ds-surface-container-highest: #f1dee0;
+    --ds-surface-variant: #f1dee0;
+    --ds-on-surface-variant: #58413f;
+    --ds-outline: #8c716e;
+    --ds-outline-variant: #e0bfbc;
+    --ds-secondary: oklch(67.3% 0.182 276.935);
+    --ds-tertiary: #715c00;
+    --ds-tertiary-container: #cca800;
+    --ds-error: #ba1a1a;
+    --ds-inverse-surface: #392e2f;
+    --ds-inverse-on-surface: #ffecee;
+}
+
+/* ── Design system tokens: dark ── */
+.dark {
+    --ds-primary: #ffb3b3;
+    --ds-primary-container: #920021;
+    --ds-on-primary: #680013;
+    --ds-on-primary-container: #ffdad9;
+    --ds-background: #1a1113;
+    --ds-on-background: #f1dee0;
+    --ds-surface: #1a1113;
+    --ds-on-surface: #f1dee0;
+    --ds-surface-container: #2a1f21;
+    --ds-surface-container-low: #23191b;
+    --ds-surface-container-high: #352a2c;
+    --ds-surface-container-highest: #413537;
+    --ds-surface-variant: #58413f;
+    --ds-on-surface-variant: #e0bfbc;
+    --ds-outline: #a8908d;
+    --ds-outline-variant: #58413f;
+    --ds-secondary: #89ceff;
+    --ds-tertiary: #eac31e;
+    --ds-tertiary-container: #554500;
+    --ds-error: #ffb4ab;
+    --ds-inverse-surface: #f1dee0;
+    --ds-inverse-on-surface: #392e2f;
+}
+
+/* ── Theme: map Tailwind tokens to CSS vars (inline = use var() at runtime) ── */
+@theme inline {
+    --color-primary: var(--ds-primary);
+    --color-primary-container: var(--ds-primary-container);
+    --color-on-primary: var(--ds-on-primary);
+    --color-on-primary-container: var(--ds-on-primary-container);
+    --color-background: var(--ds-background);
+    --color-on-background: var(--ds-on-background);
+    --color-surface: var(--ds-surface);
+    --color-on-surface: var(--ds-on-surface);
+    --color-surface-container: var(--ds-surface-container);
+    --color-surface-container-low: var(--ds-surface-container-low);
+    --color-surface-container-high: var(--ds-surface-container-high);
+    --color-surface-container-highest: var(--ds-surface-container-highest);
+    --color-surface-variant: var(--ds-surface-variant);
+    --color-on-surface-variant: var(--ds-on-surface-variant);
+    --color-outline: var(--ds-outline);
+    --color-outline-variant: var(--ds-outline-variant);
+    --color-secondary: var(--ds-secondary);
+    --color-tertiary: var(--ds-tertiary);
+    --color-tertiary-container: var(--ds-tertiary-container);
+    --color-error: var(--ds-error);
+    --color-inverse-surface: var(--ds-inverse-surface);
+    --color-inverse-on-surface: var(--ds-inverse-on-surface);
+}
+
+@theme {
+    --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+    --font-headline: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+
+    --color-zinc-50: #fafafa;
+    --color-zinc-100: #f5f5f5;
+    --color-zinc-200: #e5e5e5;
+    --color-zinc-300: #d4d4d4;
+    --color-zinc-400: #a3a3a3;
+    --color-zinc-500: #737373;
+    --color-zinc-600: #525252;
+    --color-zinc-700: #404040;
+    --color-zinc-800: #262626;
+    --color-zinc-900: #171717;
+    --color-zinc-950: #0a0a0a;
+
+    --color-accent: var(--color-neutral-800);
+    --color-accent-content: var(--color-neutral-800);
+    --color-accent-foreground: var(--color-white);
+}
+
+@layer theme {
+    .dark {
+        --color-accent: var(--color-white);
+        --color-accent-content: var(--color-white);
+        --color-accent-foreground: var(--color-neutral-800);
+    }
+}
+
+@layer base {
+
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-gray-200, currentColor);
+    }
+}
+
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.glass-effect {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    ::after,
+    ::before {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
