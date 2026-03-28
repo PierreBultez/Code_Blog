@@ -88,23 +88,25 @@ Le blog a une **structure technique propre** (URLs avec slugs, pagination, tags)
 
 | Vérification | Statut | Détails |
 |-------------|--------|---------|
-| `lang` HTML correct | **Fail** | `lang="en"` au lieu de `"fr"` — `APP_LOCALE=en` dans `.env` |
+| `lang` HTML correct | **Pass** | `lang="fr"` — corrigé session 1 |
 | HTTPS | **Warning** | `APP_URL=http://localhost` — à vérifier en production |
-| Sitemap XML | **Fail** | Aucun fichier `sitemap.xml`, aucune génération dynamique |
-| robots.txt | **Warning** | Existe mais ne référence pas le sitemap |
-| Meta descriptions | **Fail** | Absentes sur toutes les pages |
-| Balises canoniques | **Fail** | Absentes sur toutes les pages |
-| Open Graph | **Fail** | Aucune balise OG |
-| Données structurées | **Fail** | Aucun JSON-LD (Article, WebSite, Person, Breadcrumb) |
+| Sitemap XML | **Pass** | `/sitemap.xml` dynamique — corrigé session 2 |
+| robots.txt | **Pass** | Référence le sitemap, exclut `/dashboard`, `/login`, `/register` — corrigé session 1 |
+| Meta descriptions | **Pass** | Partial `seo.blade.php` avec fallback sur `excerpt` — corrigé session 1 |
+| Balises canoniques | **Pass** | Via partial SEO — corrigé session 1 |
+| Open Graph | **Pass** | OG tags complets + images générées/uploadées — corrigé session 1 |
+| Données structurées | **Pass** | JSON-LD WebSite, Article, BreadcrumbList — corrigé session 1 |
 | Balise `<time>` avec `datetime` | **Pass** | Présente dans les articles avec format ISO |
 | URLs propres (slugs) | **Pass** | `/articles/{slug}` — bien |
 | Responsive / Mobile | **Pass** | Viewport correct, design responsive Tailwind |
 | Trailing slash redirect | **Pass** | .htaccess supprime les trailing slashes (301) |
-| Performances fonts | **Warning** | Google Fonts + Material Symbols chargés en externe (~500KB+) |
+| Performances fonts | **Pass** | Chargement non-bloquant + Material Symbols allégé — corrigé session 1 |
 | Alt text images | **Warning** | Photo de profil a un alt, mais pas vérifié pour le contenu des articles |
-| Flux RSS | **Fail** | Lien dans le footer mais pointe vers `#` |
+| Flux RSS | **Pass** | `/feed` fonctionnel + `<link rel="alternate">` dans le `<head>` — corrigé session 2 |
 | Pagination SEO | **Warning** | Pagination présente mais sans `rel="next/prev"` |
-| Maillage interne | **Warning** | Pas de liens entre articles, pas d'articles connexes |
+| Maillage interne | **Pass** | Section "Articles connexes" par tags communs — corrigé session 2 |
+| Fil d'Ariane visuel | **Pass** | Rendu HTML + JSON-LD sur toutes les pages (sauf accueil) — corrigé session 2 |
+| Image OG par défaut | **Pass** | `public/images/og-default.png` générée — corrigé session 2 |
 
 ---
 
@@ -112,14 +114,14 @@ Le blog a une **structure technique propre** (URLs avec slugs, pagination, tags)
 
 | Dimension | <Code_Blog> | Laravel France | Grafikart.fr | Dev.to (FR) |
 |-----------|------------|----------------|-------------|-------------|
-| Meta descriptions | Non | Oui | Oui | Oui |
-| Open Graph | Non | Oui | Oui | Oui |
-| Sitemap XML | Non | Oui | Oui | Oui |
-| Données structurées | Non | Oui | Oui | Oui |
-| RSS Feed | Non | Oui | Oui | Oui |
+| Meta descriptions | Oui | Oui | Oui | Oui |
+| Open Graph | Oui | Oui | Oui | Oui |
+| Sitemap XML | Oui | Oui | Oui | Oui |
+| Données structurées | Oui | Oui | Oui | Oui |
+| RSS Feed | Oui | Oui | Oui | Oui |
 | Fréquence publication | Faible | Régulière | Très régulière | Continue |
 | Profondeur contenu | Courte | Moyenne | Élevée | Variable |
-| Fil d'Ariane | Non | Oui | Oui | Non |
+| Fil d'Ariane | Oui | Oui | Oui | Non |
 | Niche/Spécialisation | Laravel FR freelance | Laravel FR | Dev web FR | Général |
 
 **Avantage concurrentiel potentiel :** La niche "freelance Laravel en France, retour d'expérience terrain" est peu couverte. Les concurrents sont soit trop généralistes (Dev.to), soit orientés tutoriel pur (Grafikart). L'angle "carnet de bord" est différenciant.
@@ -128,30 +130,32 @@ Le blog a une **structure technique propre** (URLs avec slugs, pagination, tags)
 
 ## Plan d'Action Priorisé
 
-### Quick Wins (cette semaine)
+### Quick Wins — ~~cette semaine~~ FAIT (session 1 — 26 mars 2026)
 
-| # | Action | Impact | Effort |
-|---|--------|--------|--------|
-| 1 | Changer `APP_LOCALE=fr` + `APP_FAKER_LOCALE=fr_FR` | **Élevé** | 5 min |
-| 2 | Ajouter un champ `meta_description` au modèle Article | **Élevé** | 30 min |
-| 3 | Créer un partial `seo.blade.php` (meta desc, canonical, OG, Twitter) | **Élevé** | 1h |
-| 4 | Ajouter les données structurées JSON-LD (WebSite + Article) | **Élevé** | 1h |
-| 5 | Corriger les titres de page pour inclure des mots-clés | **Élevé** | 30 min |
-| 6 | Corriger les liens RSS et GitHub dans le footer | Moyen | 10 min |
-| 7 | Mettre à jour `robots.txt` avec référence au sitemap | Moyen | 5 min |
+| # | Action | Impact | Effort | Statut |
+|---|--------|--------|--------|--------|
+| 1 | Changer `APP_LOCALE=fr` + `APP_FAKER_LOCALE=fr_FR` | **Élevé** | 5 min | **Fait** |
+| 2 | Ajouter un champ `meta_description` au modèle Article | **Élevé** | 30 min | **Fait** |
+| 3 | Créer un partial `seo.blade.php` (meta desc, canonical, OG, Twitter) | **Élevé** | 1h | **Fait** |
+| 4 | Ajouter les données structurées JSON-LD (WebSite + Article) | **Élevé** | 1h | **Fait** |
+| 5 | Corriger les titres de page pour inclure des mots-clés | **Élevé** | 30 min | **Fait** |
+| 6 | Corriger les liens RSS et GitHub dans le footer | Moyen | 10 min | **Fait** |
+| 7 | Mettre à jour `robots.txt` avec référence au sitemap | Moyen | 5 min | **Fait** |
 
-### Investissements Stratégiques (ce trimestre)
+### Investissements Stratégiques — Statut au 28 mars 2026
 
-| # | Action | Impact | Effort |
-|---|--------|--------|--------|
-| 8 | Générer un sitemap XML dynamique | **Élevé** | 2h |
-| 9 | Créer un flux RSS fonctionnel | Moyen | 2h |
-| 10 | Ajouter un fil d'Ariane visuel + JSON-LD | Moyen | 1h |
-| 11 | Optimiser le chargement des fonts (self-host ou subset) | Moyen | 3h |
-| 12 | Ajouter une section "Articles connexes" sur la page article | Moyen | 2h |
-| 13 | Créer une pillar page "Guide Laravel" avec topic cluster | **Élevé** | Multi-jours |
-| 14 | Mettre en place Google Search Console + soumettre le sitemap | **Élevé** | 30 min |
-| 15 | Produire 2 articles/mois ciblant les mots-clés identifiés | **Élevé** | Continu |
+| # | Action | Impact | Effort | Statut |
+|---|--------|--------|--------|--------|
+| 8 | Générer un sitemap XML dynamique | **Élevé** | 2h | **Fait** (session 2) |
+| 9 | Créer un flux RSS fonctionnel | Moyen | 2h | **Fait** (session 2) |
+| 10 | Ajouter un fil d'Ariane visuel + JSON-LD | Moyen | 1h | **Fait** (session 2) |
+| 11 | Optimiser le chargement des fonts (self-host ou subset) | Moyen | 3h | **Fait** (session 1) |
+| 12 | Ajouter une section "Articles connexes" sur la page article | Moyen | 2h | **Fait** (session 2) |
+| 12b | Image OG par défaut (`og-default.png`) | Moyen | 30 min | **Fait** (session 2) |
+| 13 | Créer une pillar page "Guide Laravel" avec topic cluster | **Élevé** | Multi-jours | À faire |
+| 14 | Mettre en place Google Search Console + soumettre le sitemap | **Élevé** | 30 min | À faire |
+| 15 | Produire 2 articles/mois ciblant les mots-clés identifiés | **Élevé** | Continu | À faire |
+| 16 | Cache navigateur Nginx pour `/build/assets/` | Moyen | 10 min | À faire (config serveur) |
 
 ---
 

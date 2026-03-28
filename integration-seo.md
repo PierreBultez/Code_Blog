@@ -697,15 +697,233 @@ Les fichiers Vite utilisent des noms hashés (ex: `app-Bx7K3qF2.css`). Un cache 
 
 ---
 
-## Prochaines étapes (Investissements Stratégiques)
+## 15. Sitemap XML dynamique (`/sitemap.xml`)
+
+**Date :** 28 mars 2026
+
+**Problème :** Le fichier `robots.txt` référençait `/sitemap.xml` mais la route n'existait pas — Google recevait un 404 en tentant de l'indexer.
+
+### Architecture
+
+**Fichier créé :** `app/Http/Controllers/SitemapController.php`
+
+Contrôleur invocable qui génère le XML via une vue Blade. Retourne le `Content-Type: application/xml`.
+
+**Fichier créé :** `resources/views/sitemap.blade.php`
+
+Template XML conforme au protocole [sitemaps.org](https://www.sitemaps.org/protocol.html) :
+- Pages statiques : accueil, articles index, à propos
+- Tous les articles publiés avec `<lastmod>` basé sur `updated_at`
+
+**Route :** Enregistrée dans `bootstrap/app.php` (callback `then:`) **sans middleware** — un crawler n'a besoin ni de session, ni de CSRF.
+
+```php
+Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
+```
+
+### Tests
+
+**Fichier créé :** `tests/Feature/SitemapTest.php` — 4 tests :
+
+1. Retourne du XML valide avec le bon Content-Type
+2. Inclut les articles publiés
+3. Exclut les brouillons
+4. Inclut les pages statiques (home, articles, about)
+
+---
+
+## 16. Flux RSS fonctionnel (`/feed`)
+
+**Date :** 28 mars 2026
+
+**Problème :** Le lien RSS dans le footer pointait vers `/feed` mais aucune route n'existait — lien cassé visible par les utilisateurs.
+
+### Architecture
+
+**Fichier créé :** `app/Http/Controllers/RssFeedController.php`
+
+Contrôleur invocable retournant du RSS 2.0 avec `Content-Type: application/rss+xml; charset=UTF-8`. Limité aux 20 articles les plus récents.
+
+**Fichier créé :** `resources/views/feed.blade.php`
+
+Template RSS 2.0 avec namespace Atom (`xmlns:atom`) :
+- `<channel>` : titre, description, link, language (`fr`), lastBuildDate, self-link Atom
+- `<item>` par article : title (échappé XML), link, guid (permalink), pubDate (RFC 2822), description (excerpt)
+
+**Route :** Enregistrée dans `bootstrap/app.php` (callback `then:`) sans middleware.
+
+```php
+Route::get('/feed', RssFeedController::class)->name('feed');
+```
+
+### Découverte automatique
+
+**Fichier modifié :** `resources/views/layouts/public.blade.php`
+
+Ajout de la balise `<link rel="alternate">` dans le `<head>` :
+
+```html
+<link rel="alternate" type="application/rss+xml" title="<Code_Blog>" href="/feed">
+```
+
+Les navigateurs et lecteurs RSS détectent automatiquement le flux via cette balise.
+
+### Tests
+
+**Fichier créé :** `tests/Feature/RssFeedTest.php` — 4 tests :
+
+1. Retourne du XML RSS valide avec le bon Content-Type
+2. Inclut les articles publiés
+3. Exclut les brouillons
+4. Limite à 20 articles maximum
+
+---
+
+## 17. Image OG par défaut
+
+**Date :** 28 mars 2026
+
+**Problème :** Le partial `seo.blade.php` faisait fallback sur `asset('images/og-default.png')` pour les pages non-article (accueil, about, index), mais le fichier n'existait pas — les réseaux sociaux affichaient un lien d'image cassé lors du partage.
+
+**Fichier créé :** `public/images/og-default.png`
+
+Image 1200x630px (19.7 Ko) générée avec GD, dans le même style visuel que les miniatures d'articles :
+- Fond : dégradé vertical noir → rouge profond (`#000000` → `#920021`)
+- Texte : `<Code_Blog>` centré, dégradé horizontal or → corail (`#FFE17A` → `#FD5561`)
+- Police : DejaVu Sans Bold (embarquée dans `storage/fonts/`)
+
+Image statique (pas de génération dynamique) — le nom du blog change rarement.
+
+---
+
+## 18. Fil d'Ariane visuel
+
+**Date :** 28 mars 2026
+
+**Problème :** Les données `$seoBreadcrumbs` étaient déjà passées au layout et utilisées pour le JSON-LD `BreadcrumbList`, mais aucun rendu HTML n'était affiché. Les visiteurs n'avaient pas de repère visuel de leur position dans la hiérarchie du site.
+
+**Fichier modifié :** `resources/views/layouts/public.blade.php`
+
+Ajout d'un `<nav aria-label="Fil d'Ariane">` entre la navbar et le `<main>`, conditionné par `count($seoBreadcrumbs) > 1` (pas affiché sur la home page) :
+
+```blade
+@if (count($seoBreadcrumbs) > 1)
+    <nav aria-label="Fil d'Ariane" class="max-w-4xl mx-auto px-6 pt-20 pb-0">
+        <ol class="flex flex-wrap items-center gap-1 text-sm text-on-surface-variant">
+            @foreach / @endforeach avec séparateur "/"
+        </ol>
+    </nav>
+@endif
+```
+
+- Dernier élément : `aria-current="page"`, style `font-medium`, tronqué (`truncate max-w-xs`)
+- Éléments précédents : liens cliquables avec hover
+- Sémantique : `<nav>` + `<ol>` + `aria-label` + `aria-current` pour l'accessibilité
+
+**Fichiers modifiés (ajustement padding) :**
+- `resources/views/articles/index.blade.php` — `pt-20` → `pt-6`
+- `resources/views/articles/show.blade.php` — `mt-20` → `mt-6`
+- `resources/views/about.blade.php` — `pt-32` → `pt-6`
+
+Le breadcrumb fournit désormais l'espacement depuis la navbar (`pt-20`), les sections enfants n'ont plus besoin de leur propre top padding.
+
+---
+
+## 19. Articles connexes
+
+**Date :** 28 mars 2026
+
+**Problème :** Chaque page article était une impasse — aucun lien vers d'autres articles. Le maillage interne était inexistant, ce qui limitait à la fois la navigation utilisateur et la capacité de Google à découvrir et comprendre les relations entre les contenus.
+
+### Logique de recommandation
+
+**Fichier modifié :** `app/Http/Controllers/ArticleController.php`
+
+La méthode `show()` charge maintenant les articles connexes, triés par nombre de tags communs décroissant, puis par date :
+
+```php
+$relatedArticles = Article::query()
+    ->published()
+    ->where('id', '!=', $article->id)
+    ->whereHas('tags', fn ($q) => $q->whereIn('tags.id', $tagIds))
+    ->withCount(['tags as shared_tags_count' => fn ($q) => $q->whereIn('tags.id', $tagIds)])
+    ->orderByDesc('shared_tags_count')
+    ->latest('published_at')
+    ->with('tags')
+    ->take(3)
+    ->get();
+```
+
+- Exclut l'article courant
+- Ne s'affiche que s'il y a des tags (`$tagIds->isNotEmpty()`)
+- Limité à 3 articles
+- `withCount` avec alias `shared_tags_count` pour trier par pertinence
+
+### Affichage
+
+**Fichier modifié :** `resources/views/articles/show.blade.php`
+
+Section "Articles connexes" ajoutée entre le contenu et les commentaires :
+- Grille 3 colonnes (responsive : 1 colonne mobile, 3 desktop)
+- Chaque carte : vignette OG (1200x630, `loading="lazy"`), tags (max 2), date, titre (tronqué 2 lignes)
+- Effet hover sur le titre (`group-hover:text-primary`)
+- Séparateur visuel (`border-t border-outline-variant`) au-dessus de la section
+
+### Tests
+
+**Fichier créé :** `tests/Feature/RelatedArticlesTest.php` — 4 tests :
+
+1. Affiche les articles liés par tags communs
+2. N'affiche pas les articles sans tags communs
+3. N'affiche pas l'article courant dans les suggestions
+4. Limite à 3 articles connexes
+
+---
+
+## Récapitulatif des fichiers — Session 2 (28 mars 2026)
+
+### Fichiers créés
+
+| Fichier | Rôle |
+|---------|------|
+| `app/Http/Controllers/SitemapController.php` | Génère le sitemap XML dynamique |
+| `app/Http/Controllers/RssFeedController.php` | Génère le flux RSS 2.0 |
+| `resources/views/sitemap.blade.php` | Template XML du sitemap |
+| `resources/views/feed.blade.php` | Template XML du flux RSS |
+| `public/images/og-default.png` | Image OG par défaut (1200x630, 19.7 Ko) |
+| `tests/Feature/SitemapTest.php` | 4 tests sitemap |
+| `tests/Feature/RssFeedTest.php` | 4 tests RSS |
+| `tests/Feature/RelatedArticlesTest.php` | 4 tests articles connexes |
+
+### Fichiers modifiés
+
+| Fichier | Modification |
+|---------|-------------|
+| `bootstrap/app.php` | Routes `/sitemap.xml` et `/feed` sans middleware |
+| `resources/views/layouts/public.blade.php` | Balise RSS `<link rel="alternate">` + fil d'Ariane visuel |
+| `resources/views/articles/show.blade.php` | Section "Articles connexes" + padding `mt-6` |
+| `resources/views/articles/index.blade.php` | Padding `pt-6` (breadcrumbs) |
+| `resources/views/about.blade.php` | Padding `pt-6` (breadcrumbs) |
+| `app/Http/Controllers/ArticleController.php` | Requête articles connexes par tags communs |
+
+### Validation
+
+- **103 tests passés** (253 assertions, 0 régression)
+- **Pint** : code formaté automatiquement
+
+---
+
+## Prochaines étapes
 
 Les points suivants restent à implémenter :
 
-- [ ] Sitemap XML dynamique (`/sitemap.xml`)
-- [ ] Flux RSS fonctionnel (`/feed`)
-- [ ] Fil d'Ariane visuel dans les pages
+- [x] ~~Sitemap XML dynamique~~ (fait — section 15)
+- [x] ~~Flux RSS fonctionnel~~ (fait — section 16)
+- [x] ~~Image OG par défaut~~ (fait — section 17)
+- [x] ~~Fil d'Ariane visuel~~ (fait — section 18)
 - [x] ~~Optimisation du chargement des fonts~~ (fait — section 14a/14b)
-- [ ] Section "Articles connexes" en bas des articles
+- [x] ~~Section "Articles connexes"~~ (fait — section 19)
 - [ ] Inscription à Google Search Console + soumission du sitemap
-- [ ] Image OG par défaut (`public/images/og-default.png`)
 - [ ] Cache navigateur Nginx pour les assets Vite (section 14d)
+- [ ] Pillar page "Guide Laravel" avec topic cluster
+- [ ] Produire 2 articles/mois ciblant les mots-clés identifiés
