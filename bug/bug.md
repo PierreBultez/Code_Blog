@@ -4,7 +4,7 @@
 **Repository :** [alpinejs/alpine](https://github.com/alpinejs/alpine) (MIT License)
 **Fichier source :** `packages/csp/src/parser.js`
 **Severite :** Low (deprecation warning, no functional impact)
-**Impact :** Baisse du score Lighthouse "Best Practices" de 100 a 96
+**Impact :** Baisse du score Lighthouse "Best Practices" de 100 a 81
 
 ---
 
@@ -30,15 +30,15 @@ Le code filtrait deja `styleMedia` (une autre propriete de `window` qui pose pro
 
 ### Code concerne
 
-**Fichier :** `packages/csp/src/parser.js` (ligne ~52-56 dans la version actuelle)
+**Fichier :** `packages/csp/src/parser.js` (ligne ~6 dans la version actuelle)
 
 ```js
-Object.getOwnPropertyNames(globalThis).forEach((key) => {
-    if (key === "styleMedia")
-        return;
+Object.getOwnPropertyNames(globalThis).forEach(key => {
+    // Prevent Safari deprecation warning...
+    if (key === "styleMedia") return
 
-    globals.add(globalThis[key]);
-});
+    globals.add(globalThis[key])
+})
 ```
 
 Le probleme est a la ligne `globals.add(globalThis[key])` : quand `key === "sharedStorage"`, l'acces a `globalThis["sharedStorage"]` declenche l'avertissement Chrome.
@@ -55,8 +55,9 @@ Le bug apparait quand **toutes** ces conditions sont reunies :
 
 Le bug **ne se manifeste PAS** avec :
 - Le build standard d'Alpine.js (qui utilise `eval()`/`new Function()` au lieu du parseur CSP)
-- Firefox ou Safari (qui n'exposent pas `window.sharedStorage`)
 - Les anciennes versions de Chrome (avant l'ajout de l'API Shared Storage)
+
+Le bug n'a pas été testé sur d'autres navigateurs.
 
 ---
 
@@ -72,9 +73,9 @@ Le bug **ne se manifeste PAS** avec :
 1. **Creer un projet minimal avec Alpine CSP :**
 
 ```bash
-mkdir alpine-csp-bug && cd alpine-csp-bug
-npm init -y
-npm install @alpinejs/csp
+git clone https://github.com/alpinejs/alpine.git alpinejs-bug
+cd alpinejs-bug
+npm install
 ```
 
 2. **Creer un fichier HTML :**
@@ -83,26 +84,27 @@ npm install @alpinejs/csp
 <!DOCTYPE html>
 <html>
 <head>
+    <script src="./packages/alpinejs/dist/cdn.js" defer></script>
+    <script src="./packages/csp/dist/cdn.js" defer></script>
     <title>Alpine CSP sharedStorage Bug</title>
 </head>
 <body>
-    <div x-data="{ count: 0 }">
-        <button x-on:click="count = count + 1">
-            Clicks: <span x-text="count">0</span>
-        </button>
-    </div>
-    <script type="module">
-        import Alpine from '@alpinejs/csp';
-        window.Alpine = Alpine;
-        Alpine.start();
-    </script>
+<div x-data="{ count: 0 }">
+    <button x-on:click="count = count + 1">
+        Clicks: <span x-text="count">0</span>
+    </button>
+</div>
+<script type="module">
+    window.Alpine = Alpine;
+</script>
 </body>
 </html>
 ```
 
-3. **Servir avec un serveur local :**
+3. **Build et servir avec un serveur local :**
 
 ```bash
+npm run build
 npx serve .
 ```
 
@@ -113,7 +115,7 @@ npx serve .
 
 5. **Lancer un audit Lighthouse :**
    - DevTools > Lighthouse > "Best Practices"
-   - Le score sera inferieur a 100 a cause de cet avertissement
+   - Le score sera grandement impacte a cause de cet avertissement
 
 ### Resultat attendu
 
@@ -134,27 +136,25 @@ Ajouter `"sharedStorage"` a la liste de filtrage existante, de la meme maniere q
 ### Diff
 
 ```diff
---- a/packages/csp/src/parser.js
-+++ b/packages/csp/src/parser.js
-@@ -52,7 +52,7 @@
+/packages/csp/src/parser.js
+
  Object.getOwnPropertyNames(globalThis).forEach((key) => {
--    if (key === "styleMedia")
-+    if (key === "styleMedia" || key === "sharedStorage")
-         return;
+-    if (key === "styleMedia") return
++    if (key === "styleMedia" || key === "sharedStorage") return
 
      globals.add(globalThis[key]);
- });
+ })
 ```
 
 ### Code apres correction
 
 ```js
 Object.getOwnPropertyNames(globalThis).forEach((key) => {
-    if (key === "styleMedia" || key === "sharedStorage")
-        return;
+    // Prevent Chrome deprecation warning...
+    if (key === "styleMedia" || key === "sharedStorage") return
 
     globals.add(globalThis[key]);
-});
+})
 ```
 
 ---
@@ -206,7 +206,7 @@ globals. Accessing `window.sharedStorage` triggers Chrome's deprecation warning:
 
 > [Deprecation] Shared Storage API is deprecated and will be removed in a future release.
 
-This causes Lighthouse "Best Practices" score to drop from 100 to 96.
+This causes Lighthouse "Best Practices" score to drop from 100 to 81.
 
 This is the same class of issue that was already fixed for `styleMedia`.
 
