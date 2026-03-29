@@ -78,7 +78,9 @@
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
             "@php artisan boost:update --ansi",
-            "@php artisan tinymce:publish --ansi"
+            "@php artisan tinymce:publish --ansi",
+            "@php artisan livewire:publish --assets --ansi",
+            "@php scripts/patch-livewire-csp.php"
         ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""

@@ -209,6 +209,10 @@ document.querySelectorAll('link[data-async-font]').forEach(link => {
 | `app/Http/Middleware/SecurityHeaders.php` | Header CSP avec nonces, detection Vite dev server |
 | `config/livewire.php` | `csp_safe => true` |
 | `package.json` | Ajout `@alpinejs/csp` |
+| `vite.config.js` | Plugin Vite pour patcher le bug sharedStorage d'Alpine CSP |
+| `scripts/patch-livewire-csp.php` | Patch du meme bug dans le bundle Livewire publie |
+| `composer.json` | Publication + patch auto des assets Livewire dans `post-update-cmd` |
+| `public/vendor/livewire/` | Assets Livewire publies et patches |
 
 ### JavaScript
 | Fichier | Modification |
@@ -287,6 +291,22 @@ Empeche l'injection d'un `<base>` malveillant.
 form-action 'self'
 ```
 Les formulaires ne peuvent poster que vers le meme domaine.
+
+---
+
+## Patch Alpine CSP — bug sharedStorage
+
+Le parseur CSP d'Alpine.js enumere toutes les proprietes de `globalThis` (= `window`) pour construire un set de globals connus. Quand il accede a `window.sharedStorage`, Chrome detecte cet acces comme une utilisation de l'API Shared Storage (deprecee) et emet un warning qui fait baisser le score Lighthouse "Best Practices".
+
+Alpine CSP filtre deja `styleMedia` (une autre propriete problematique). Le patch ajoute `sharedStorage` a cette meme liste de filtrage.
+
+**Deux sources, deux patchs :**
+
+1. **`@alpinejs/csp` (npm)** — patche via un plugin Vite dans `vite.config.js` qui remplace la ligne lors du bundling. S'applique aux pages publiques sans Livewire.
+
+2. **`livewire.js` (bundle Livewire)** — patche via `scripts/patch-livewire-csp.php` apres publication des assets Livewire. Commande integree dans `post-update-cmd` de `composer.json` pour se re-appliquer automatiquement apres chaque `composer update`.
+
+**Note :** Ce patch sera obsolete quand Alpine.js corrigera ce bug upstream ou quand Chrome retirera l'API Shared Storage. Verifier les changelogs Alpine lors des mises a jour.
 
 ---
 
