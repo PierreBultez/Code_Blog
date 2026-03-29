@@ -22,9 +22,8 @@
     <div class="flex items-center gap-2">
         {{-- Dark mode toggle --}}
         <button
-            x-data="{ dark: localStorage.getItem('theme') === 'dark' }"
-            x-init="$watch('dark', val => { localStorage.setItem('theme', val ? 'dark' : 'light'); document.documentElement.classList.toggle('dark', val) }); document.documentElement.classList.toggle('dark', dark)"
-            x-on:click="dark = !dark"
+            x-data="darkModeToggle"
+            x-on:click="toggle()"
             x-bind:aria-label="dark ? 'Activer le mode clair' : 'Activer le mode sombre'"
             class="p-2 hover:bg-zinc-100/50 dark:hover:bg-zinc-800/50 rounded-full transition-all active:scale-95 duration-200 ease-in-out"
         >

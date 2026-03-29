@@ -92,6 +92,6 @@
 
         {{ $slot }}
 
-        @fluxScripts
+        @fluxScripts(['nonce' => Vite::cspNonce()])
     </body>
 </html>
