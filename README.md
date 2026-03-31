@@ -106,4 +106,4 @@ Les variables principales :
 
 ## Licence
 
-Usage personnel.
+Usage personnel autorisé avec crédit.
